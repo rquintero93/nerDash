@@ -10,9 +10,11 @@ dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 API_KEY = os.getenv("API_KEY")
 
+# Check if the .env file exists at the specified path
 if not os.path.exists(dotenv_path):
     print(f".env file not found at: {dotenv_path}")
 else:
+    # Load the .env file
     success = load_dotenv(dotenv_path)
     if not success:
         print("Failed to load .env file")
@@ -20,12 +22,12 @@ else:
         print(".env file loaded successfully")
 
 response = requests.get(
-    " https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections",
+    " https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections/sample_magic_cards",
     headers={
         "x-api-key": API_KEY,
     },
     json={
-        # "name": "Brain_thought_store",
+        # "name": "sample_magic_cards",
         "limit": "100",
         "offset": "0",
         "include": ["embeddings", "documents", "metadatas"],
