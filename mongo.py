@@ -80,11 +80,9 @@ def get_globalstates_retrievalCount():
     collection = db["globalstates"]
 
     df = star_as_dataframe(collection)
-
-    df = df.head(1)
-
-    # Expand JSON column into rows
-    df = df.explode("retrievalCount")
+    retrieval_data = df["retrievalCount"].iloc[0]  # Assuming only one document
+    # Convert the JSON object into a DataFrame
+    df = pd.DataFrame(list(retrieval_data.items()), columns=["id", "value"])
 
     client.close()
 
@@ -107,4 +105,4 @@ def get_history():
 # define main tables
 df_gs_cards = get_globalstates_cards()
 df_gs_retrievalCount = get_globalstates_retrievalCount()
-df_history = get_history()
+# df_history = get_history()
