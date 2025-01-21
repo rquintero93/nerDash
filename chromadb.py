@@ -29,7 +29,7 @@ response = requests.post(
         "x-api-key": API_KEY,
     },
     json={
-        "limit": "15000",
+        "limit": "20000",
         "offset": "0",
         "include": ["documents", "metadatas"],
     },

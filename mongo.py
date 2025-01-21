@@ -62,15 +62,41 @@ def get_globalstates_cards():
 
     df = df.head(1)
 
-    # Expand JSON column into rows
-    json_df = df.explode("cards")
+    if "cards" in df.columns:
+        # Explode the "cards" column to process each card separately
+        df = df.explode("cards")
 
-    # Convert the JSON objects into separate columns
-    df = pd.json_normalize(json_df["cards"])
+        # Extract both the ID and card details
+        cards_data = df["cards"].apply(
+            lambda x: (
+                {"id": list(x.keys())[0], "details": list(x.values())[0]}
+                if isinstance(x, dict)
+                else None
+            )
+        )
+
+        cards_data = cards_data.dropna()
+
+        # Create a new DataFrame with the ID and normalized details
+        if not cards_data.empty:
+            cards_df = pd.DataFrame(
+                cards_data.tolist()
+            )  # Split "id" and "details" into columns
+            normalized_df = pd.json_normalize(cards_df["details"])
+            normalized_df["id"] = cards_df[
+                "id"
+            ]  # Add the ID back to the normalized DataFrame
+        else:
+            print("No valid 'cards_data' found.")
+            normalized_df = pd.DataFrame()
+    else:
+        print("The 'cards' column is missing.")
+        normalized_df = pd.DataFrame()
 
     client.close()
 
-    return df
+    normalized_df = normalized_df.drop(columns=["pageContent"])
+    return normalized_df
 
 
 def get_globalstates_retrievalCount():
@@ -82,7 +108,7 @@ def get_globalstates_retrievalCount():
     df = star_as_dataframe(collection)
     retrieval_data = df["retrievalCount"].iloc[0]  # Assuming only one document
     # Convert the JSON object into a DataFrame
-    df = pd.DataFrame(list(retrieval_data.items()), columns=["id", "value"])
+    df = pd.DataFrame(list(retrieval_data.items()), columns=["id", "retrievalCount"])
 
     client.close()
 
@@ -106,3 +132,5 @@ def get_history():
 df_gs_cards = get_globalstates_cards()
 df_gs_retrievalCount = get_globalstates_retrievalCount()
 # df_history = get_history()
+
+merged_df = pd.merge(df_gs_cards, df_gs_retrievalCount, on="id", how="left")
