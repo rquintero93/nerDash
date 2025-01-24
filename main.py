@@ -14,8 +14,8 @@ def main():
     # df_history = get_history()
     merged_df = pd.merge(df_gs_cards, df_gs_retrievalCount, on="id", how="left")
 
-    print(merged_df)
+    return merged_df
 
 
 if __name__ == "__main__":
-    main()
+    df = main()
