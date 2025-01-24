@@ -13,18 +13,8 @@ dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 MONGO_URI = os.getenv("MONGO_URI")
 
-# Check if the .env file exists at the specified path
-if not os.path.exists(dotenv_path):
-    print(f".env file not found at: {dotenv_path}")
-else:
-    success = load_dotenv(dotenv_path)
-    if not success:
-        print("Failed to load .env file")
-    else:
-        print(".env file loaded successfully")
 
-
-def get_mongo_client():
+def get_mongo_client() -> MongoClient:
     """
     Create and return a MongoDB client.
     """
@@ -37,12 +27,12 @@ def get_mongo_client():
         raise
 
 
-def star_as_dataframe(collection):
+def star_as_dataframe(collection, filter_query=None, limit=1000) -> pd.DataFrame:
     """
     Fetch MongoDB data and convert it into a Pandas DataFrame.
     """
     try:
-        cursor = collection.find()
+        cursor = collection.find(filter_query or {}).limit(limit)
         df = pd.DataFrame(list(cursor))
         return df
     except Exception as e:
@@ -50,87 +40,82 @@ def star_as_dataframe(collection):
         return pd.DataFrame()
 
 
-def get_globalstates_cards():
+def get_globalstates_cards(
+    db: str = "nerDB", target_collection: str = "globalstates"
+) -> pd.DataFrame:
     """
-    Returns: DataFrame with the cards from the globalstates collection.
+    Retrieve cards from the globalstates collection.
     """
     client = get_mongo_client()
-    db = client["nerDB"]
-    collection = db["globalstates"]
+    db = client[db]
+    collection = db[target_collection]
 
     df = star_as_dataframe(collection)
 
-    df = df.head(1)
+    if df.empty or "cards" not in df.columns:
+        print("The 'cards' column is missing or the DataFrame is empty.")
+        return pd.DataFrame()
 
-    if "cards" in df.columns:
-        # Explode the "cards" column to process each card separately
-        df = df.explode("cards")
+    # Explode the "cards" column
+    df = df.explode("cards")
 
-        # Extract both the ID and card details
-        cards_data = df["cards"].apply(
-            lambda x: (
-                {"id": list(x.keys())[0], "details": list(x.values())[0]}
-                if isinstance(x, dict)
-                else None
-            )
+    cards_data = df["cards"].apply(
+        lambda x: (
+            {"id": list(x.keys())[0], "details": list(x.values())[0]}
+            if isinstance(x, dict)
+            else None
         )
+    )
 
-        cards_data = cards_data.dropna()
+    cards_data = cards_data.dropna()
 
-        # Create a new DataFrame with the ID and normalized details
-        if not cards_data.empty:
-            cards_df = pd.DataFrame(
-                cards_data.tolist()
-            )  # Split "id" and "details" into columns
-            normalized_df = pd.json_normalize(cards_df["details"])
-            normalized_df["id"] = cards_df[
-                "id"
-            ]  # Add the ID back to the normalized DataFrame
-        else:
-            print("No valid 'cards_data' found.")
-            normalized_df = pd.DataFrame()
+    if not cards_data.empty:
+        cards_df = pd.DataFrame(cards_data.tolist())
+        normalized_df = pd.json_normalize(cards_df["details"])
+        normalized_df["id"] = cards_df["id"]
     else:
-        print("The 'cards' column is missing.")
+        print("No valid 'cards_data' found.")
         normalized_df = pd.DataFrame()
 
-    client.close()
+    if "pageContent" in normalized_df.columns:
+        normalized_df = normalized_df.drop(columns=["pageContent"])
 
-    normalized_df = normalized_df.drop(columns=["pageContent"])
+    client.close()
     return normalized_df
 
 
-def get_globalstates_retrievalCount():
-
+def get_globalstates_retrievalCount(
+    db: str = "nerDB", target_collection: str = "globalstates"
+) -> pd.DataFrame:
+    """
+    Retrieve retrievalCount data from the globalstates collection.
+    """
     client = get_mongo_client()
-    db = client["nerDB"]
-    collection = db["globalstates"]
+    db = client[db]
+    collection = db[target_collection]
 
     df = star_as_dataframe(collection)
-    retrieval_data = df["retrievalCount"].iloc[0]  # Assuming only one document
-    # Convert the JSON object into a DataFrame
+
+    if df.empty or "retrievalCount" not in df.columns:
+        print("The 'retrievalCount' field is missing or the DataFrame is empty.")
+        return pd.DataFrame()
+
+    retrieval_data = df["retrievalCount"].iloc[0]
     df = pd.DataFrame(list(retrieval_data.items()), columns=["id", "retrievalCount"])
 
     client.close()
-
     return df
 
 
-def get_history():
-
+def get_history(db: str = "nerDB", target_collection: str = "history") -> pd.DataFrame:
+    """
+    Retrieve the history collection.
+    """
     client = get_mongo_client()
-    db = client["nerDB"]
-    collection = db["history"]
+    db = client[db]
+    collection = db[target_collection]
 
     df = star_as_dataframe(collection)
 
     client.close()
-
     return df
-
-
-# define main tables
-df_gs_cards = get_globalstates_cards()
-df_gs_retrievalCount = get_globalstates_retrievalCount()
-# df_history = get_history()
-
-merged_df = pd.merge(df_gs_cards, df_gs_retrievalCount, on="id", how="left")
