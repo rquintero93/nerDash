@@ -928,8 +928,6 @@ kombu==5.4.2
     #   celery
     #   dvc
     #   dvc-task
-krb5==0.7.0
-    # via nerdbot (pyproject.toml)
 langcodes==3.5.0
     # via
     #   nerdbot (pyproject.toml)
