@@ -41,7 +41,7 @@ def star_as_dataframe(collection, filter_query=None) -> pd.DataFrame:
 
 
 def get_globalstates_cards(
-    db: str = "nerDB", target_collection: str = "globalstates"
+    db: str = "ragDB", target_collection: str = "globalstates"
 ) -> pd.DataFrame:
     """
     Retrieve cards from the globalstates collection.
@@ -85,7 +85,7 @@ def get_globalstates_cards(
 
 
 def get_globalstates_retrievalCount(
-    db: str = "nerDB", target_collection: str = "globalstates"
+    db: str = "ragDB", target_collection: str = "globalstates"
 ) -> pd.DataFrame:
     """
     Retrieve retrievalCount data from the globalstates collection.
@@ -107,7 +107,7 @@ def get_globalstates_retrievalCount(
     return df
 
 
-def get_history(db: str = "nerDB", target_collection: str = "history") -> pd.DataFrame:
+def get_history(db: str = "ragDB", target_collection: str = "history") -> pd.DataFrame:
     """
     Retrieve the history collection.
     """
