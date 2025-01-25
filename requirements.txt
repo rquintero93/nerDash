@@ -1623,8 +1623,6 @@ pyzmq==26.2.0
     #   jupyter-server
 qgrid==1.3.1
     # via nerdbot (pyproject.toml)
-quipus==0.3.2
-    # via nerdbot (pyproject.toml)
 rapidfuzz==3.11.0
     # via
     #   nerdbot (pyproject.toml)
