@@ -27,12 +27,12 @@ def get_mongo_client() -> MongoClient:
         raise
 
 
-def star_as_dataframe(collection, filter_query=None, limit=1000) -> pd.DataFrame:
+def star_as_dataframe(collection, filter_query=None) -> pd.DataFrame:
     """
     Fetch MongoDB data and convert it into a Pandas DataFrame.
     """
     try:
-        cursor = collection.find(filter_query or {}).limit(limit)
+        cursor = collection.find(filter_query or {})
         df = pd.DataFrame(list(cursor))
         return df
     except Exception as e:
