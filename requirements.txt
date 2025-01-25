@@ -2048,8 +2048,6 @@ typing-extensions==4.12.2
     #   openai
     #   optree
     #   panel
-    #   psycopg
-    #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   pyopenssl
