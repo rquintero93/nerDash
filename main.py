@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import streamlit as st
 
@@ -18,15 +20,10 @@ def main():
     merged_df = pd.merge(df_gs_cards, df_gs_retrievalCount, on="id", how="left")
     merged_df = merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
 
-    # Ensure metadata.timestamp is a datetime
+    # Ensure metadata.timestamp is converted to Python datetime
     merged_df["metadata.timestamp"] = pd.to_datetime(
         merged_df["metadata.timestamp"].astype(int), unit="ms"
-    )
-
-    # Convert all timestamps to native Python datetime
-    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].apply(
-        lambda x: x.to_pydatetime()
-    )
+    ).dt.to_pydatetime()
 
     # Display DataFrame in Streamlit (optional)
     st.subheader("Merged DataFrame Preview")
@@ -36,6 +33,10 @@ def main():
     st.header("Filter by Timestamp")
     min_time = merged_df["metadata.timestamp"].min()
     max_time = merged_df["metadata.timestamp"].max()
+
+    # Convert min_time and max_time to datetime.datetime explicitly
+    min_time = datetime.datetime.fromisoformat(min_time.isoformat())
+    max_time = datetime.datetime.fromisoformat(max_time.isoformat())
 
     # Add a Streamlit slider for the timestamp range
     start_time, end_time = st.slider(
