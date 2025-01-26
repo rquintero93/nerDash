@@ -5,23 +5,6 @@ from graphs import make_network_graph
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
 
 
-def filter_graph_by_timestamp(df, start_time, end_time):
-    # Filter DataFrame for nodes within the selected time range
-    filtered_df = df[
-        (df["metadata.timestamp"] >= start_time)
-        & (df["metadata.timestamp"] <= end_time)
-    ]
-    return filtered_df
-
-
-def make_network_graph_with_filter(df, start_time, end_time):
-    # Filter the DataFrame by the selected time range
-    filtered_df = filter_graph_by_timestamp(df, start_time, end_time)
-
-    # Generate the graph
-    return make_network_graph(filtered_df)
-
-
 def main():
     st.title("AI Thought Network Visualization")
 
@@ -39,6 +22,11 @@ def main():
     merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].astype(int)
     merged_df["metadata.timestamp"] = pd.to_datetime(
         merged_df["metadata.timestamp"], unit="ms"
+    )
+
+    # Convert to Python datetime for Streamlit compatibility
+    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].apply(
+        lambda x: x.to_pydatetime()
     )
 
     # Display DataFrame in Streamlit (optional)
@@ -64,7 +52,12 @@ def main():
 
     # Generate the network graph based on the selected time range
     st.header("Generating the network graph...")
-    network_graph = make_network_graph_with_filter(merged_df, start_time, end_time)
+    network_graph = make_network_graph(
+        merged_df[
+            (merged_df["metadata.timestamp"] >= start_time)
+            & (merged_df["metadata.timestamp"] <= end_time)
+        ]
+    )
 
     # Display the graph in Streamlit
     st.plotly_chart(network_graph, use_container_width=True)
