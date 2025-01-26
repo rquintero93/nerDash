@@ -11,7 +11,7 @@ def main():
     st.title("AI Thought Network Visualization")
 
     # Load data
-    st.header("Loading data...")
+    st.header("Loading data (be patient)...")
     df_ragdb_gs_cards = get_globalstates_cards()
     df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
     df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
@@ -43,14 +43,14 @@ def main():
         nerdb_merged_df["metadata.timestamp"].astype(int), unit="ms"
     ).dt.to_pydatetime()
 
-    mongo_merge_df = pd.concat([ragdb_merged_df, nerdb_merged_df])
+    mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
 
     # Display DataFrame in Streamlit (optional)
     st.subheader("Data Preview")
     st.dataframe(mongo_merge_df)
 
     # Add a timestamp filter slider
-    st.header("Filter by Timestamp")
+    st.header("Filter by Timestamp (heavy operation, will take time)...")
     min_time = mongo_merge_df["metadata.timestamp"].min()
     max_time = mongo_merge_df["metadata.timestamp"].max()
 
