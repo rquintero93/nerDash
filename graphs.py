@@ -64,7 +64,7 @@ def make_network_graph(df):
         node_colors.append(name_color_map.get(name, default_color))
 
     # Recompute positions with increased spacing for better layout
-    pos = nx.spring_layout(G, seed=42, k=0.7)  # Adjust `k` for larger spacing
+    pos = nx.spring_layout(G, seed=42, k=0.5)  # Adjust `k` for larger spacing
 
     # Extract edge and node positions for Plotly
     edge_x = []
