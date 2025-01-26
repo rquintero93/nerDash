@@ -19,10 +19,10 @@ def main():
     merged_df = merged_df.reset_index()
 
     # Ensure metadata.timestamp is a datetime
-    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].astype(int)
-    merged_df["metadata.timestamp"] = pd.to_datetime(
-        merged_df["metadata.timestamp"], unit="ms"
-    )
+    # merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].astype(int)
+    # merged_df["metadata.timestamp"] = pd.to_datetime(
+    #     merged_df["metadata.timestamp"], unit="ms"
+    # )
 
     # Generate the network graph
     st.header("Generating the network graph...")
