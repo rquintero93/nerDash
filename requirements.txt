@@ -94,6 +94,10 @@ smmap==5.0.2
     # via gitdb
 streamlit==1.41.1
     # via nerdbot (pyproject.toml)
+scipy==1.5.1
+    # via
+    #   nerdbot (pyproject.toml)
+    #   streamlit
 tenacity==9.0.0
     # via
     #   plotly
