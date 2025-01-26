@@ -23,7 +23,7 @@ API_KEY = os.getenv("API_KEY")
 #         print(".env file loaded successfully")
 
 
-def get_chroma(limit: int) -> pd.DataFrame:
+def get_chroma(limit: int, offset: int) -> pd.DataFrame:
     response = requests.post(
         # " https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections",
         "https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections/9937882c-0661-4ff5-bc6f-f0aff3203bd4/get",
@@ -32,7 +32,7 @@ def get_chroma(limit: int) -> pd.DataFrame:
         },
         json={
             "limit": f"{limit}",
-            "offset": "0",
+            "offset": f"{offset}",
             "include": ["documents", "metadatas"],
         },
     )
