@@ -24,11 +24,7 @@ def main():
         merged_df["metadata.timestamp"], unit="ms"
     )
 
-    # Convert to Python datetime for Streamlit compatibility
-    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].apply(
-        lambda x: x.to_pydatetime()
-    )
-
+    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].dt.to_pydatetime()
     # Display DataFrame in Streamlit (optional)
     st.subheader("Merged DataFrame Preview")
     st.dataframe(merged_df)
