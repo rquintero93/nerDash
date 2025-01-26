@@ -19,12 +19,15 @@ def main():
     merged_df = merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
 
     # Ensure metadata.timestamp is a datetime
-    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].astype(int)
     merged_df["metadata.timestamp"] = pd.to_datetime(
-        merged_df["metadata.timestamp"], unit="ms"
+        merged_df["metadata.timestamp"].astype(int), unit="ms"
     )
 
-    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].dt.to_pydatetime()
+    # Convert all timestamps to native Python datetime
+    merged_df["metadata.timestamp"] = merged_df["metadata.timestamp"].apply(
+        lambda x: x.to_pydatetime()
+    )
+
     # Display DataFrame in Streamlit (optional)
     st.subheader("Merged DataFrame Preview")
     st.dataframe(merged_df)
@@ -48,12 +51,11 @@ def main():
 
     # Generate the network graph based on the selected time range
     st.header("Generating the network graph...")
-    network_graph = make_network_graph(
-        merged_df[
-            (merged_df["metadata.timestamp"] >= start_time)
-            & (merged_df["metadata.timestamp"] <= end_time)
-        ]
-    )
+    filtered_df = merged_df[
+        (merged_df["metadata.timestamp"] >= start_time)
+        & (merged_df["metadata.timestamp"] <= end_time)
+    ]
+    network_graph = make_network_graph(filtered_df)
 
     # Display the graph in Streamlit
     st.plotly_chart(network_graph, use_container_width=True)
