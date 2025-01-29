@@ -45,9 +45,20 @@ def main():
 
     mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
 
+    def ensure_list(column):
+        """
+        Ensure all values in the column are lists. If a value is not a list,
+        convert it to a list with the value as the only item.
+        """
+        return column.apply(lambda x: x if isinstance(x, list) else [x])
+
+    # Apply the function to the metadata.data.colors column
+    mongo_merge_df["metadata.data.colors"] = ensure_list(
+        mongo_merge_df["metadata.data.colors"]
+    )
     # Display DataFrame in Streamlit (optional)
     st.subheader("Data Preview")
-    # st.dataframe(mongo_merge_df)
+    st.dataframe(mongo_merge_df)
 
     # Add a timestamp filter slider
     st.header("Filter by Timestamp (heavy operation, will take time)...")

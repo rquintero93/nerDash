@@ -39,6 +39,24 @@ nerdb_merged_df["metadata.timestamp"] = pd.to_datetime(
 
 mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
 
+for color in enumerate(mongo_merge_df["metadata.data.colors"]):
+    index, value = color
+    print(index, value, type(value))
+
+
+def ensure_list(column):
+    """
+    Ensure all values in the column are lists. If a value is not a list,
+    convert it to a list with the value as the only item.
+    """
+    return column.apply(lambda x: x if isinstance(x, list) else [x])
+
+
+# Apply the function to the metadata.data.colors column
+mongo_merge_df["metadata.data.colors"] = ensure_list(
+    mongo_merge_df["metadata.data.colors"]
+)
+
 # chromadb["timestamp"] = (
 #     chromadb["timestamp"].astype(int) if "timestamp" in chromadb.columns else None
 # )
