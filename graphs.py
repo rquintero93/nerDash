@@ -31,6 +31,7 @@ def make_network_graph(df):
             node_type=row["metadata.data.type"],
             colors=row["metadata.data.colors"],
             mana_cost=row["metadata.data.manaCost"],
+            botId=row["metadata.botId"],
         )
         for target in targets:
             G.add_edge(source, target)
@@ -102,7 +103,8 @@ def make_network_graph(df):
         node_text.append(node[1].get("name", "Unknown"))
         # Hover text: enriched with name, type, color, mana cost, and connections
         node_hover_text.append(
-            f"Name: {node[1].get('name', 'Unknown')}<br>"
+            f"Bot Name: {node[1].get('botId', 'Unknown')}<br>"
+            f"Card Name: {node[1].get('name', 'Unknown')}<br>"
             f"Type: {node[1].get('node_type', 'Unknown')}<br>"
             f"Colors: {node[1].get('colors', 'Unknown')}<br>"
             f"Mana Cost: {node[1].get('mana_cost', 'Unknown')}<br>"
