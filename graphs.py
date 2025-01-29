@@ -113,7 +113,7 @@ def make_network_graph(df):
         x=node_x,
         y=node_y,
         mode="markers+text",
-        text=node_text,  # Visible text: name only
+        # text=node_text,  # Visible text: name only
         textposition="top center",  # Dynamic label position adjustment
         textfont=dict(size=10, color="white"),  # White text for better readability
         hoverinfo="text",
