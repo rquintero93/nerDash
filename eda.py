@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from graphs import make_agg_network_graph, make_network_graph
+from graphs import make_agg_network_graph
 
 # from chromadb import get_chroma
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
@@ -16,6 +16,8 @@ df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
 
 # chromadb = get_chroma(limit=20000, offset=293)
 # chromadb = chromadb.dropna(subset=["timestamp"])
+df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
+df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["pageContent"])
 df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
 df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
 
@@ -85,39 +87,51 @@ mongo_merge_df["metadata.data.colors"] = ensure_list(
 # )
 
 # Generate the network graph
-network_graph = make_network_graph(mongo_merge_df)
-network_graph.show()
+# network_graph = make_network_graph(mongo_merge_df)
+# network_graph.show()
 
 
 def concat_unique(series):
     if series.dtype == "object" and isinstance(series.iloc[0], list):
-        # Flatten the list of lists and remove duplicates
-        return json.dumps(
-            list(set([item for sublist in series.dropna() for item in sublist]))
-        )
+        # Flatten the list of lists while preserving order
+        seen = set()
+        result = [
+            item
+            for sublist in series.dropna()
+            for item in sublist
+            if not (item in seen or seen.add(item))
+        ]
+        return json.dumps(result)
+
     elif series.dtype == "object" and isinstance(series.iloc[0], str):
-        # Split the strings by "; " and remove duplicates
-        return json.dumps(
-            list(
-                set(
-                    [
-                        item
-                        for sublist in series.dropna()
-                        for item in sublist.split("; ")
-                    ]
-                )
-            )
-        )
+        # Split the strings by "; " while preserving order
+        seen = set()
+        result = [
+            item
+            for sublist in series.dropna().astype(str)
+            for item in sublist.split("; ")
+            if not (item in seen or seen.add(item))
+        ]
+        return json.dumps(result)
+
     else:
-        return json.dumps(list(set(series.dropna())))
+        # Preserve order for non-object types
+        seen = set()
+        result = [x for x in series.dropna() if not (x in seen or seen.add(x))]
+        return json.dumps(result)
 
 
-### Updated Aggregation Logic
+# Convert timestamp to datetime and sort
+mongo_merge_df["metadata.timestamp"] = pd.to_datetime(
+    mongo_merge_df["metadata.timestamp"]
+)
+mongo_merge_df = mongo_merge_df.sort_values("metadata.timestamp")
 
-# Convert the timestamp column to string
+# Convert `id` column to string
+mongo_merge_df["id"] = mongo_merge_df["id"].astype(str)
 mongo_merge_df["metadata.timestamp"] = mongo_merge_df["metadata.timestamp"].astype(str)
 
-# Define the aggregation functions for each column
+# Define aggregation functions
 agg_funcs = {
     "retrievalCount": "sum",
     "id": concat_unique,
@@ -129,7 +143,7 @@ agg_funcs = {
     "metadata.data.flavorText": concat_unique,
     "metadata.data.power": concat_unique,
     "metadata.data.toughness": concat_unique,
-    "metadata.timestamp": concat_unique,
+    "metadata.timestamp": concat_unique,  # Ensures order from sorted dataframe
     "metadata.chatId": concat_unique,
     "metadata.userId": concat_unique,
     "metadata.botId": concat_unique,
@@ -138,7 +152,7 @@ agg_funcs = {
 }
 
 # Group by 'metadata.data.name' and aggregate
-mongo_agg_df = mongo_merge_df.groupby("metadata.data.name").agg(agg_funcs)
+mongo_agg_df = mongo_merge_df.groupby("metadata.data.name", sort=False).agg(agg_funcs)
 
 # Reset index if needed
 mongo_agg_df = mongo_agg_df.reset_index()
