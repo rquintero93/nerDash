@@ -47,7 +47,7 @@ def main():
 
     # Display DataFrame in Streamlit (optional)
     st.subheader("Data Preview")
-    st.dataframe(mongo_merge_df)
+    # st.dataframe(mongo_merge_df)
 
     # Add a timestamp filter slider
     st.header("Filter by Timestamp (heavy operation, will take time)...")
