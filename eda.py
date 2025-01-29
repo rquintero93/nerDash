@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from graphs import make_agg_network_graph
+from graphs import make_agg_network_graph, make_network_graph
 
 # from chromadb import get_chroma
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
@@ -16,6 +16,23 @@ df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
 
 # chromadb = get_chroma(limit=20000, offset=293)
 # chromadb = chromadb.dropna(subset=["timestamp"])
+df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
+df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
+
+
+id_column_indexes = [
+    i for i, col in enumerate(df_ragdb_gs_cards.columns) if col == "id"
+]
+
+df_ragdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
+df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["id_duplicate"])
+
+id_column_indexes = [
+    i for i, col in enumerate(df_nerdb_gs_cards.columns) if col == "id"
+]
+
+df_nerdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
+df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["id_duplicate"])
 
 ragdb_merged_df = pd.merge(
     df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"
@@ -68,8 +85,8 @@ mongo_merge_df["metadata.data.colors"] = ensure_list(
 # )
 
 # Generate the network graph
-# network_graph = make_network_graph(merged_df)
-# network_graph.show()
+network_graph = make_network_graph(mongo_merge_df)
+network_graph.show()
 
 
 def concat_unique(series):

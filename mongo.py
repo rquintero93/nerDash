@@ -15,9 +15,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 
 def get_mongo_client() -> MongoClient:
-    """
-    Create and return a MongoDB client.
-    """
+    """Create and return a MongoDB client."""
     try:
         client = MongoClient(MONGO_URI)
         print("MongoDB connected successfully!")
@@ -27,95 +25,84 @@ def get_mongo_client() -> MongoClient:
         raise
 
 
-def star_as_dataframe(collection, filter_query=None) -> pd.DataFrame:
-    """
-    Fetch MongoDB data and convert it into a Pandas DataFrame.
-    """
-    try:
-        cursor = collection.find(filter_query or {})
-        df = pd.DataFrame(list(cursor))
-        return df
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return pd.DataFrame()
-
-
 def get_globalstates_cards(
     db: str = "ragDB", target_collection: str = "globalstates"
 ) -> pd.DataFrame:
-    """
-    Retrieve cards from the globalstates collection.
-    """
+    """Retrieve cards from the globalstates collection using MongoDB aggregation."""
     client = get_mongo_client()
-    db = client[db]
-    collection = db[target_collection]
+    collection = client[db][target_collection]
 
-    df = star_as_dataframe(collection)
+    pipeline = [
+        {
+            "$match": {"cards": {"$exists": True, "$not": {"$size": 0}}}
+        },  # Ensure "cards" field exists
+        {"$unwind": "$cards"},  # Flatten the "cards" array
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "id": {"$first": {"$objectToArray": "$cards"}},
+                    "details": {"$last": {"$objectToArray": "$cards"}},
+                }
+            }
+        },
+        {
+            "$replaceRoot": {"newRoot": {"id": "$id.k", "details": "$details.v"}}
+        },  # Extract key as ID, value as details
+    ]
 
-    if df.empty or "cards" not in df.columns:
-        print("The 'cards' column is missing or the DataFrame is empty.")
-        return pd.DataFrame()
+    cursor = collection.aggregate(pipeline)
+    df = pd.DataFrame(list(cursor))
 
-    # Explode the "cards" column
-    df = df.explode("cards")
-
-    cards_data = df["cards"].apply(
-        lambda x: (
-            {"id": list(x.keys())[0], "details": list(x.values())[0]}
-            if isinstance(x, dict)
-            else None
-        )
-    )
-
-    cards_data = cards_data.dropna()
-
-    if not cards_data.empty:
-        cards_df = pd.DataFrame(cards_data.tolist())
-        normalized_df = pd.json_normalize(cards_df["details"])
-        normalized_df["id"] = cards_df["id"]
-    else:
-        print("No valid 'cards_data' found.")
-        normalized_df = pd.DataFrame()
-
-    if "pageContent" in normalized_df.columns:
-        normalized_df = normalized_df.drop(columns=["pageContent"])
+    if "details" in df.columns:
+        details_df = pd.json_normalize(df["details"])
+        df = pd.concat([df.drop(columns=["details"]), details_df], axis=1)
 
     client.close()
-    return normalized_df
+    return df
 
 
 def get_globalstates_retrievalCount(
     db: str = "ragDB", target_collection: str = "globalstates"
 ) -> pd.DataFrame:
-    """
-    Retrieve retrievalCount data from the globalstates collection.
-    """
+    """Retrieve retrievalCount data from the globalstates collection using MongoDB aggregation."""
     client = get_mongo_client()
-    db = client[db]
-    collection = db[target_collection]
+    collection = client[db][target_collection]
 
-    df = star_as_dataframe(collection)
+    pipeline = [
+        {"$match": {"retrievalCount": {"$exists": True}}},
+        {
+            "$project": {"retrievalCount": {"$objectToArray": "$retrievalCount"}}
+        },  # Convert to key-value array
+        {"$unwind": "$retrievalCount"},  # Flatten retrievalCount dictionary
+        {
+            "$project": {
+                "id": "$retrievalCount.k",
+                "retrievalCount": "$retrievalCount.v",
+            }
+        },  # Extract ID & count
+    ]
 
-    if df.empty or "retrievalCount" not in df.columns:
-        print("The 'retrievalCount' field is missing or the DataFrame is empty.")
-        return pd.DataFrame()
-
-    retrieval_data = df["retrievalCount"].iloc[0]
-    df = pd.DataFrame(list(retrieval_data.items()), columns=["id", "retrievalCount"])
+    cursor = collection.aggregate(pipeline)
+    df = pd.DataFrame(list(cursor))
 
     client.close()
     return df
 
 
 def get_history(db: str = "ragDB", target_collection: str = "history") -> pd.DataFrame:
-    """
-    Retrieve the history collection.
-    """
+    """Retrieve the history collection efficiently."""
     client = get_mongo_client()
-    db = client[db]
-    collection = db[target_collection]
+    collection = client[db][target_collection]
 
-    df = star_as_dataframe(collection)
+    pipeline = [
+        {"$match": {}},  # No filter, but can be customized
+        {
+            "$project": {"_id": 0}
+        },  # Remove MongoDB default `_id` field for cleaner DataFrame
+    ]
+
+    cursor = collection.aggregate(pipeline)
+    df = pd.DataFrame(list(cursor))
 
     client.close()
     return df
