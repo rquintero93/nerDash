@@ -17,10 +17,10 @@ def main():
     df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
     df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
 
-
+    df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
+    df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["pageContent"])
     df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
     df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
-
 
     id_column_indexes = [
         i for i, col in enumerate(df_ragdb_gs_cards.columns) if col == "id"
