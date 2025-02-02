@@ -238,12 +238,14 @@ def make_agg_network_graph(df):
         x, y = pos[node]
         node_x.append(x)
         node_y.append(y)
+        concept_count = G.degree(node)
         node_text.append(data["name"])
         node_hover_text.append(
             f"Name: {data['name']}<br>"
             f"Type: {data.get('node_type', 'Unknown')}<br>"
             f"Colors: {data.get('colors', 'Unknown')}<br>"
             f"Mana Cost: {data.get('mana_cost', 'Unknown')}<br>"
+            f"Connecting Concepts: {concept_count}<br>"  # Include node's degree (connections)
             f"Total Retrievals: {data.get('retrievalCount', 'Unknown')}<br>"
             f"Total Associated Cards: {len(data.get('ids', []))}"
         )
