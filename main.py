@@ -79,6 +79,7 @@ def make_agg_df(mongo_merge_df):
 
 
 def main():
+    st.set_page_config(page_title="AI Thought Network Visualization", layout="wide")
     st.title("AI Thought Network Visualization")
 
     # Load data
