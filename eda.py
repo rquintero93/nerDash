@@ -1,5 +1,3 @@
-import json
-
 import pandas as pd
 
 from graphs import make_agg_network_graph
@@ -58,9 +56,9 @@ nerdb_merged_df["metadata.timestamp"] = pd.to_datetime(
 
 mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
 
-for color in enumerate(mongo_merge_df["metadata.data.colors"]):
-    index, value = color
-    print(index, value, type(value))
+# for color in enumerate(mongo_merge_df["metadata.data.colors"]):
+#     index, value = color
+#     print(index, value, type(value))
 
 
 def ensure_list(column):
@@ -92,19 +90,18 @@ mongo_merge_df["metadata.data.colors"] = ensure_list(
 
 
 def concat_unique(series):
-    if series.dtype == "object" and isinstance(series.iloc[0], list):
-        # Flatten the list of lists while preserving order
-        seen = set()
-        result = [
-            item
-            for sublist in series.dropna()
-            for item in sublist
-            if not (item in seen or seen.add(item))
-        ]
-        return json.dumps(result)
+    """Ensure lists remain lists, and unique values are preserved."""
+    if series.apply(lambda x: isinstance(x, list)).any():
+        unique_items = set()
+        result = []
+        for sublist in series.dropna():
+            for item in sublist:
+                if item not in unique_items:
+                    unique_items.add(item)
+                    result.append(item)
+        return result  # Keep as a list
 
-    elif series.dtype == "object" and isinstance(series.iloc[0], str):
-        # Split the strings by "; " while preserving order
+    elif series.dtype == "object":
         seen = set()
         result = [
             item
@@ -112,13 +109,11 @@ def concat_unique(series):
             for item in sublist.split("; ")
             if not (item in seen or seen.add(item))
         ]
-        return json.dumps(result)
+        return result  # Keep as list
 
     else:
-        # Preserve order for non-object types
         seen = set()
-        result = [x for x in series.dropna() if not (x in seen or seen.add(x))]
-        return json.dumps(result)
+        return [x for x in series.dropna() if not (x in seen or seen.add(x))]
 
 
 # Convert timestamp to datetime and sort

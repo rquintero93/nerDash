@@ -3,8 +3,79 @@ import datetime
 import pandas as pd
 import streamlit as st
 
-from graphs import make_network_graph
+from graphs import make_agg_network_graph, make_network_graph
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
+
+
+def make_agg_df(mongo_merge_df):
+
+    def concat_unique(series):
+        """Ensure lists remain lists, and unique values are preserved."""
+        if series.apply(lambda x: isinstance(x, list)).any():
+            unique_items = set()
+            result = []
+            for sublist in series.dropna():
+                for item in sublist:
+                    if item not in unique_items:
+                        unique_items.add(item)
+                        result.append(item)
+            return result  # Keep as a list
+
+        elif series.dtype == "object":
+            seen = set()
+            result = [
+                item
+                for sublist in series.dropna().astype(str)
+                for item in sublist.split("; ")
+                if not (item in seen or seen.add(item))
+            ]
+            return result  # Keep as list
+
+        else:
+            seen = set()
+            return [x for x in series.dropna() if not (x in seen or seen.add(x))]
+
+    # Convert timestamp to datetime and sort
+    mongo_merge_df["metadata.timestamp"] = pd.to_datetime(
+        mongo_merge_df["metadata.timestamp"]
+    )
+    mongo_merge_df = mongo_merge_df.sort_values("metadata.timestamp")
+
+    # Convert `id` column to string
+    mongo_merge_df["id"] = mongo_merge_df["id"].astype(str)
+    mongo_merge_df["metadata.timestamp"] = mongo_merge_df["metadata.timestamp"].astype(
+        str
+    )
+
+    # Define aggregation functions
+    agg_funcs = {
+        "retrievalCount": "sum",
+        "id": concat_unique,
+        "metadata.data.colors": concat_unique,
+        "metadata.data.manaCost": concat_unique,
+        "metadata.data.type": concat_unique,
+        "metadata.data.subtypes": concat_unique,
+        "metadata.data.text": concat_unique,
+        "metadata.data.flavorText": concat_unique,
+        "metadata.data.power": concat_unique,
+        "metadata.data.toughness": concat_unique,
+        "metadata.timestamp": concat_unique,  # Ensures order from sorted dataframe
+        "metadata.chatId": concat_unique,
+        "metadata.userId": concat_unique,
+        "metadata.botId": concat_unique,
+        "metadata.relatedCards": concat_unique,
+        "metadata.relatedLore": concat_unique,
+    }
+
+    # Group by 'metadata.data.name' and aggregate
+    mongo_agg_df = mongo_merge_df.groupby("metadata.data.name", sort=False).agg(
+        agg_funcs
+    )
+
+    # Reset index if needed
+    mongo_agg_df = mongo_agg_df.reset_index()
+
+    return mongo_agg_df
 
 
 def main():
@@ -100,12 +171,21 @@ def main():
     st.write(f"Selected time range: {start_time} to {end_time}")
 
     # Generate the network graph based on the selected time range
-    st.header("Generating the network graph...")
+    st.header("Generating the Thought Level Graph...")
     filtered_df = mongo_merge_df[
         (mongo_merge_df["metadata.timestamp"] >= start_time)
         & (mongo_merge_df["metadata.timestamp"] <= end_time)
     ]
     network_graph = make_network_graph(filtered_df)
+
+    # Display the graph in Streamlit
+    st.plotly_chart(network_graph, use_container_width=True)
+
+    # Generate the network graph based on the selected time range
+    st.header("Generating the Concept Level Graph...")
+
+    agg_df = make_agg_df(filtered_df)
+    network_graph = make_agg_network_graph(agg_df)
 
     # Display the graph in Streamlit
     st.plotly_chart(network_graph, use_container_width=True)
