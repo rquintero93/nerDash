@@ -1,6 +1,6 @@
 import pandas as pd
 
-from graphs import make_agg_network_graph
+from graphs import make_network_dataframe
 
 # from chromadb import get_chroma
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
@@ -152,5 +152,7 @@ mongo_agg_df = mongo_merge_df.groupby("metadata.data.name", sort=False).agg(agg_
 # Reset index if needed
 mongo_agg_df = mongo_agg_df.reset_index()
 
-network_graph = make_agg_network_graph(mongo_agg_df)
-network_graph.show()
+# network_graph = make_agg_network_graph(mongo_agg_df)
+# network_graph.show()
+
+network_df = make_network_dataframe(mongo_agg_df)

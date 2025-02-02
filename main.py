@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 import streamlit as st
 
-from graphs import make_agg_network_graph, make_network_graph
+from graphs import make_agg_network_graph, make_network_dataframe, make_network_graph
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
 
 
@@ -146,9 +146,6 @@ def main():
     mongo_merge_df["metadata.data.colors"] = ensure_list(
         mongo_merge_df["metadata.data.colors"]
     )
-    # Display DataFrame in Streamlit (optional)
-    st.subheader("Data Preview")
-    st.dataframe(mongo_merge_df)
 
     # Add a timestamp filter slider
     st.header("Filter by Timestamp (heavy operation, will take time)...")
@@ -168,24 +165,31 @@ def main():
         format="YYYY-MM-DD HH:mm:ss",
     )
 
-    # Display the selected time range
-    st.write(f"Selected time range: {start_time} to {end_time}")
-
-    # Generate the network graph based on the selected time range
-    st.header("Generating the Thought Level Graph...")
     filtered_df = mongo_merge_df[
         (mongo_merge_df["metadata.timestamp"] >= start_time)
         & (mongo_merge_df["metadata.timestamp"] <= end_time)
     ]
+
+    # Display the selected time range
+    st.write(f"Selected time range: {start_time} to {end_time}")
+
+    # Display DataFrame in Streamlit (optional)
+    st.subheader("Thought Level Data")
+    st.dataframe(filtered_df)
+
+    # Generate the network graph based on the selected time range
+    st.header("Generating the Thought Level Graph...")
     network_graph = make_network_graph(filtered_df)
 
     # Display the graph in Streamlit
     st.plotly_chart(network_graph, use_container_width=True)
 
+    st.subheader("Concept Network Data")
+    agg_df = make_agg_df(filtered_df)
+    st.dataframe(make_network_dataframe(agg_df))
     # Generate the network graph based on the selected time range
     st.header("Generating the Concept Level Graph...")
 
-    agg_df = make_agg_df(filtered_df)
     network_graph = make_agg_network_graph(agg_df)
 
     # Display the graph in Streamlit
