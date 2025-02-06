@@ -6,6 +6,7 @@ import streamlit as st
 from graphs import (make_agg_network_graph, make_network_dataframe,
                     make_network_graph)
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
+from utils import clean_colors, clean_mana_cost
 
 
 def make_agg_df(mongo_merge_df):
@@ -229,6 +230,8 @@ def main():
         st.write("No network data to display.")
     else:
         agg_df = make_agg_df(name_filtered_df)
+        agg_df["colors"] = agg_df["colors"].apply(clean_colors)
+        agg_df["mana_cost"] = agg_df["mana_cost"].apply(clean_mana_cost)
         st.dataframe(make_network_dataframe(agg_df))
         # Generate the network graph based on the selected time range
         st.header("Generating the Concept Level Graph...")
