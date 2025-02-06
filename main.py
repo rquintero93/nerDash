@@ -215,11 +215,14 @@ def main():
     else:
         network_graph = make_network_graph(name_filtered_df)
 
-    if not network_graph or network_graph is None:
+    try:
+        if network_graph is None:
+            st.write("No network data to display.")
+        # Display the graph in Streamlit
+        else:
+            st.plotly_chart(network_graph, use_container_width=True)
+    except Exception:
         st.write("No network data to display.")
-    # Display the graph in Streamlit
-    else:
-        st.plotly_chart(network_graph, use_container_width=True)
 
     st.subheader("Concept Network Data")
     if name_filtered_df.empty or name_filtered_df.shape[0] == 1:
@@ -232,11 +235,14 @@ def main():
 
         network_graph = make_agg_network_graph(agg_df)
 
+    try:
         if network_graph is None:
             st.write("No network data to display.")
         else:
         # Display the graph in Streamlit
             st.plotly_chart(network_graph, use_container_width=True)
+    except Exception:
+        st.write("No network data to display.")
 
 
 if __name__ == "__main__":
