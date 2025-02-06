@@ -194,7 +194,7 @@ def main():
     st.header("Filter by Card Name")
 
     # Create a filter dropdown with available ID values
-    id_filter = st.selectbox("Select a Card Name:", options=[None] + id_filtered_df["metadata.data.name"].tolist())
+    id_filter = st.selectbox("Select a Card Name:", options=[None] + sorted(id_filtered_df["metadata.data.name"].tolist()))
 
     # Filter DataFrame based on selection
     if id_filter:
