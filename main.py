@@ -185,7 +185,7 @@ def main():
     if id_filter:
         filtered_df = mongo_merge_df[
             (mongo_merge_df["id"] == id_filter) | 
-            (mongo_merge_df["metadata.relatedCards"].apply(lambda x: id_filter in x))
+            (mongo_merge_df["metadata.relatedCards"].apply(lambda x: id_filter in x if isinstance(x, list) else False))
         ]
     else:
         filtered_df = mongo_merge_df
