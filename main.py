@@ -196,21 +196,27 @@ def main():
 
     # Generate the network graph based on the selected time range
     st.header("Generating the Thought Level Graph...")
-    network_graph = make_network_graph(filtered_df)
+    if filtered_df.empty or filtered_df.shape[0] == 1:
+        st.write("No network data to display.")
+    else:
+        network_graph = make_network_graph(filtered_df)
 
     # Display the graph in Streamlit
     st.plotly_chart(network_graph, use_container_width=True)
 
     st.subheader("Concept Network Data")
-    agg_df = make_agg_df(filtered_df)
-    st.dataframe(make_network_dataframe(agg_df))
-    # Generate the network graph based on the selected time range
-    st.header("Generating the Concept Level Graph...")
+    if filtered_df.empty or filtered_df.shape[0] == 1:
+        st.write("No network data to display.")
+    else:
+        agg_df = make_agg_df(filtered_df)
+        st.dataframe(make_network_dataframe(agg_df))
+        # Generate the network graph based on the selected time range
+        st.header("Generating the Concept Level Graph...")
 
-    network_graph = make_agg_network_graph(agg_df)
+        network_graph = make_agg_network_graph(agg_df)
 
-    # Display the graph in Streamlit
-    st.plotly_chart(network_graph, use_container_width=True)
+        # Display the graph in Streamlit
+        st.plotly_chart(network_graph, use_container_width=True)
 
 
 if __name__ == "__main__":
