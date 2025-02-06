@@ -179,11 +179,11 @@ def main():
     st.header("Filter by Card ID")
 
 # Create a filter dropdown with available ID values
-    id_filter = st.selectbox("Select an ID:", options=[None] + mongo_merge_df["ID"].tolist())
+    id_filter = st.selectbox("Select an ID:", options=[None] + mongo_merge_df["id"].tolist())
 
 # Filter DataFrame based on selection
     if id_filter:
-        filtered_df = mongo_merge_df[mongo_merge_df["ID"] == id_filter]
+        filtered_df = mongo_merge_df[mongo_merge_df["id"] == id_filter]
     else:
         filtered_df = mongo_merge_df
 
