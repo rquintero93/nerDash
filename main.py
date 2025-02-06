@@ -183,7 +183,10 @@ def main():
 
 # Filter DataFrame based on selection
     if id_filter:
-        filtered_df = mongo_merge_df[mongo_merge_df["id"] == id_filter]
+        filtered_df = mongo_merge_df[
+            (mongo_merge_df["id"] == id_filter) | 
+            (mongo_merge_df["metadata.relatedCards"].apply(lambda x: id_filter in x))
+        ]
     else:
         filtered_df = mongo_merge_df
 
