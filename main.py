@@ -207,6 +207,8 @@ def main():
 
     # Display DataFrame in Streamlit 
     st.subheader("Thought Level Data")
+    name_filtered_df["metadata.data.colors"] = name_filtered_df["metadata.data.colors"].apply(clean_colors)
+    name_filtered_df["metadata.data.manaCost"] = name_filtered_df["metadata.data.manaCost"].apply(clean_mana_cost)
     st.dataframe(name_filtered_df)
 
     # Generate the network graph based on the selected time range
@@ -232,6 +234,7 @@ def main():
         agg_df = make_agg_df(name_filtered_df)
         agg_df["metadata.data.colors"] = agg_df["metadata.data.colors"].apply(clean_colors)
         agg_df["metadata.data.manaCost"] = agg_df["metadata.data.manaCost"].apply(clean_mana_cost)
+
         # Generate the network graph based on the selected time range
         st.dataframe(make_network_dataframe(agg_df))
         st.header("Generating the Concept Level Graph...")
