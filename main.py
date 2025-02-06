@@ -215,7 +215,7 @@ def main():
     else:
         network_graph = make_network_graph(name_filtered_df)
 
-    if network_graph is None:
+    if not network_graph or network_graph is None:
         st.write("No network data to display.")
     # Display the graph in Streamlit
     else:
