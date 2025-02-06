@@ -201,8 +201,11 @@ def main():
     else:
         network_graph = make_network_graph(filtered_df)
 
+    if network_graph is None:
+        st.write("No network data to display.")
     # Display the graph in Streamlit
-    st.plotly_chart(network_graph, use_container_width=True)
+    else:
+        st.plotly_chart(network_graph, use_container_width=True)
 
     st.subheader("Concept Network Data")
     if filtered_df.empty or filtered_df.shape[0] == 1:
@@ -214,9 +217,12 @@ def main():
         st.header("Generating the Concept Level Graph...")
 
         network_graph = make_agg_network_graph(agg_df)
-        print(type(network_graph))
+
+        if network_graph is None:
+            st.write("No network data to display.")
+        else:
         # Display the graph in Streamlit
-        st.plotly_chart(network_graph, use_container_width=True)
+            st.plotly_chart(network_graph, use_container_width=True)
 
 
 if __name__ == "__main__":
