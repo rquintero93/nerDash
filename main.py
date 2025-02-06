@@ -230,13 +230,13 @@ def main():
         st.write("No network data to display.")
     else:
         agg_df = make_agg_df(name_filtered_df)
-        st.dataframe(make_network_dataframe(agg_df))
+        agg_df["metadata.data.colors"] = agg_df["metadata.data.colors"].apply(clean_colors)
+        agg_df["metadata.data.manaCost"] = agg_df["metadata.data.manaCost"].apply(clean_mana_cost)
         # Generate the network graph based on the selected time range
+        st.dataframe(make_network_dataframe(agg_df))
         st.header("Generating the Concept Level Graph...")
 
 
-        agg_df["metadata.data.colors"] = agg_df["metadata.data.colors"].apply(clean_colors)
-        agg_df["metadata.data.manaCost"] = agg_df["metadata.data.manaCost"].apply(clean_mana_cost)
         network_graph = make_agg_network_graph(agg_df)
 
     try:
