@@ -214,7 +214,7 @@ def main():
         st.header("Generating the Concept Level Graph...")
 
         network_graph = make_agg_network_graph(agg_df)
-
+        print(type(network_graph))
         # Display the graph in Streamlit
         st.plotly_chart(network_graph, use_container_width=True)
 
