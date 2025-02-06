@@ -3,7 +3,8 @@ import datetime
 import pandas as pd
 import streamlit as st
 
-from graphs import make_agg_network_graph, make_network_dataframe, make_network_graph
+from graphs import (make_agg_network_graph, make_network_dataframe,
+                    make_network_graph)
 from mongo import get_globalstates_cards, get_globalstates_retrievalCount
 
 
@@ -173,7 +174,20 @@ def main():
     # Display the selected time range
     st.write(f"Selected time range: {start_time} to {end_time}")
 
-    # Display DataFrame in Streamlit (optional)
+
+    # apply a filter by card ID
+    st.header("Filter by Card ID")
+
+# Create a filter dropdown with available ID values
+    id_filter = st.selectbox("Select an ID:", options=[None] + mongo_merge_df["ID"].tolist())
+
+# Filter DataFrame based on selection
+    if id_filter:
+        filtered_df = mongo_merge_df[mongo_merge_df["ID"] == id_filter]
+    else:
+        filtered_df = mongo_merge_df
+
+    # Display DataFrame in Streamlit 
     st.subheader("Thought Level Data")
     st.dataframe(filtered_df)
 
