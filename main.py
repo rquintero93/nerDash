@@ -178,28 +178,42 @@ def main():
     # apply a filter by card ID
     st.header("Filter by Card ID")
 
-# Create a filter dropdown with available ID values
-    id_filter = st.selectbox("Select an ID:", options=[None] + mongo_merge_df["id"].tolist())
+    # Create a filter dropdown with available ID values
+    id_filter = st.selectbox("Select an ID:", options=[None] + filtered_df["id"].tolist())
 
-# Filter DataFrame based on selection
+    # Filter DataFrame based on selection
     if id_filter:
-        filtered_df = mongo_merge_df[
-            (mongo_merge_df["id"] == id_filter) | 
-            (mongo_merge_df["metadata.relatedCards"].apply(lambda x: id_filter in x if isinstance(x, list) else False))
+        id_filtered_df = filtered_df[
+            (filtered_df["id"] == id_filter) | 
+            (filtered_df["metadata.relatedCards"].apply(lambda x: id_filter in x if isinstance(x, list) else False))
         ]
     else:
-        filtered_df = mongo_merge_df
+        id_filtered_df = filtered_df
+
+    # apply a filter by card name
+    st.header("Filter by Card Name")
+
+    # Create a filter dropdown with available ID values
+    id_filter = st.selectbox("Select a Card Name:", options=[None] + id_filtered_df["metadata.data.name"].tolist())
+
+    # Filter DataFrame based on selection
+    if id_filter:
+        name_filtered_df = id_filtered_df[
+            (id_filtered_df["metadata.data.name"] == id_filter)
+        ]
+    else:
+        name_filtered_df = id_filtered_df
 
     # Display DataFrame in Streamlit 
     st.subheader("Thought Level Data")
-    st.dataframe(filtered_df)
+    st.dataframe(name_filtered_df)
 
     # Generate the network graph based on the selected time range
     st.header("Generating the Thought Level Graph...")
-    if filtered_df.empty or filtered_df.shape[0] == 1:
+    if name_filtered_df.empty or name_filtered_df.shape[0] == 1:
         st.write("No network data to display.")
     else:
-        network_graph = make_network_graph(filtered_df)
+        network_graph = make_network_graph(name_filtered_df)
 
     if network_graph is None:
         st.write("No network data to display.")
@@ -208,10 +222,10 @@ def main():
         st.plotly_chart(network_graph, use_container_width=True)
 
     st.subheader("Concept Network Data")
-    if filtered_df.empty or filtered_df.shape[0] == 1:
+    if name_filtered_df.empty or name_filtered_df.shape[0] == 1:
         st.write("No network data to display.")
     else:
-        agg_df = make_agg_df(filtered_df)
+        agg_df = make_agg_df(name_filtered_df)
         st.dataframe(make_network_dataframe(agg_df))
         # Generate the network graph based on the selected time range
         st.header("Generating the Concept Level Graph...")
