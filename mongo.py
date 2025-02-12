@@ -60,13 +60,14 @@ def get_globalstates_cards(
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
 
-    if "anchorChange" in df.columns:
-        anchorChange = pd.json_normalize(df["anchorChange"])
-        df = pd.concat([df.drop(columns=["anchorChange"]), anchorChange], axis=1)
+    # if "anchorChange" in df.columns:
+    #     anchorChange = pd.json_normalize(df["anchorChange"], sep='_', record_prefix='anchorChange')
+    #     df = pd.concat([df.drop(columns=["anchorChange"]), anchorChange], axis=1)
+    #
+    # if "metadata" in df.columns:
+    #     metadata = pd.json_normalize(df["metadata"], sep='_', record_prefix='metadata')
+    #     df = pd.concat([df.drop(columns=["metadata"]), metadata], axis=1)
 
-    if "metadata" in df.columns:
-        metadata = pd.json_normalize(df["metadata"])
-        df = pd.concat([df.drop(columns=["metadata"]), metadata], axis=1)
 
     client.close()
     return df
