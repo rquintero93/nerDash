@@ -26,43 +26,54 @@ def get_mongo_client() -> MongoClient:
 
 
 def get_globalstates_cards(
-    db: str = "ragDB", target_collection: str = "globalstates"
+    db: str = "ragDB", target_collection: str = "kengrams"
 ) -> pd.DataFrame:
     """Retrieve cards from the globalstates collection using MongoDB aggregation."""
     client = get_mongo_client()
     collection = client[db][target_collection]
 
+    # pipeline = [
+    #     {
+    #         "$match": {"cards": {"$exists": True, "$not": {"$size": 0}}}
+    #     },  # Ensure "cards" field exists
+    #     {"$unwind": "$cards"},  # Flatten the "cards" array
+    #     {
+    #         "$replaceRoot": {
+    #             "newRoot": {
+    #                 "id": {"$first": {"$objectToArray": "$cards"}},
+    #                 "details": {"$last": {"$objectToArray": "$cards"}},
+    #             }
+    #         }
+    #     },
+    #     {
+    #         "$replaceRoot": {"newRoot": {"id": "$id.k", "details": "$details.v"}}
+    #     },  # Extract key as ID, value as details
+    # ]
+
     pipeline = [
+        {"$match": {}},  # No filter, but can be customized
         {
-            "$match": {"cards": {"$exists": True, "$not": {"$size": 0}}}
-        },  # Ensure "cards" field exists
-        {"$unwind": "$cards"},  # Flatten the "cards" array
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "id": {"$first": {"$objectToArray": "$cards"}},
-                    "details": {"$last": {"$objectToArray": "$cards"}},
-                }
-            }
+            "$project": {"_id": 0}
         },
-        {
-            "$replaceRoot": {"newRoot": {"id": "$id.k", "details": "$details.v"}}
-        },  # Extract key as ID, value as details
     ]
 
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
 
-    if "details" in df.columns:
-        details_df = pd.json_normalize(df["details"])
-        df = pd.concat([df.drop(columns=["details"]), details_df], axis=1)
+    if "anchorChange" in df.columns:
+        anchorChange = pd.json_normalize(df["anchorChange"])
+        df = pd.concat([df.drop(columns=["anchorChange"]), anchorChange], axis=1)
+
+    if "metadata" in df.columns:
+        metadata = pd.json_normalize(df["metadata"])
+        df = pd.concat([df.drop(columns=["metadata"]), metadata], axis=1)
 
     client.close()
     return df
 
 
 def get_globalstates_retrievalCount(
-    db: str = "ragDB", target_collection: str = "globalstates"
+    db: str = "ragDB", target_collection: str = "kengrams"
 ) -> pd.DataFrame:
     """Retrieve retrievalCount data from the globalstates collection using MongoDB aggregation."""
     client = get_mongo_client()

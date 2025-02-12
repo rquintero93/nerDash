@@ -2,76 +2,76 @@ import pandas as pd
 
 from graphs import make_network_dataframe
 # from chromadb import get_chroma
-from mongo import get_globalstates_cards, get_globalstates_retrievalCount
+from mongo import get_globalstates_cards
 
 pd.set_option("display.max_columns", None)
 
 df_ragdb_gs_cards = get_globalstates_cards()
-df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
+# df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
 df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
-df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
+# df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
 
 # chromadb = get_chroma(limit=20000, offset=293)
 # chromadb = chromadb.dropna(subset=["timestamp"])
-df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
-df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["pageContent"])
-df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
-df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
-
-
-id_column_indexes = [
-    i for i, col in enumerate(df_ragdb_gs_cards.columns) if col == "id"
-]
-
-df_ragdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
-df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["id_duplicate"])
-
-id_column_indexes = [
-    i for i, col in enumerate(df_nerdb_gs_cards.columns) if col == "id"
-]
-
-df_nerdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
-df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["id_duplicate"])
-
-ragdb_merged_df = pd.merge(
-    df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"
-)
-ragdb_merged_df = ragdb_merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
-
-# Ensure metadata.timestamp is converted to Python datetime
-ragdb_merged_df["metadata.timestamp"] = pd.to_datetime(
-    ragdb_merged_df["metadata.timestamp"].astype(int), unit="ms"
-).dt.to_pydatetime()
-
-nerdb_merged_df = pd.merge(
-    df_nerdb_gs_cards, df_nerdb_gs_retrievalCount, on="id", how="left"
-)
-nerdb_merged_df = nerdb_merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
-
-# Ensure metadata.timestamp is converted to Python datetime
-nerdb_merged_df["metadata.timestamp"] = pd.to_datetime(
-    nerdb_merged_df["metadata.timestamp"].astype(int), unit="ms"
-).dt.to_pydatetime()
-
-mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
-
+# df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
+# df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["pageContent"])
+# df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
+# df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
+#
+#
+# id_column_indexes = [
+#     i for i, col in enumerate(df_ragdb_gs_cards.columns) if col == "id"
+# ]
+#
+# df_ragdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
+# df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["id_duplicate"])
+#
+# id_column_indexes = [
+#     i for i, col in enumerate(df_nerdb_gs_cards.columns) if col == "id"
+# ]
+#
+# df_nerdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
+# df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["id_duplicate"])
+#
+# ragdb_merged_df = pd.merge(
+#     df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"
+# )
+# ragdb_merged_df = ragdb_merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
+#
+# # Ensure metadata.timestamp is converted to Python datetime
+# ragdb_merged_df["metadata.timestamp"] = pd.to_datetime(
+#     ragdb_merged_df["metadata.timestamp"].astype(int), unit="ms"
+# ).dt.to_pydatetime()
+#
+# nerdb_merged_df = pd.merge(
+#     df_nerdb_gs_cards, df_nerdb_gs_retrievalCount, on="id", how="left"
+# )
+# nerdb_merged_df = nerdb_merged_df.dropna(subset=["metadata.timestamp"]).reset_index()
+#
+# # Ensure metadata.timestamp is converted to Python datetime
+# nerdb_merged_df["metadata.timestamp"] = pd.to_datetime(
+#     nerdb_merged_df["metadata.timestamp"].astype(int), unit="ms"
+# ).dt.to_pydatetime()
+#
+# mongo_merge_df = pd.concat([nerdb_merged_df, ragdb_merged_df])
+#
 # for color in enumerate(mongo_merge_df["metadata.data.colors"]):
 #     index, value = color
 #     print(index, value, type(value))
 
 
-def ensure_list(column):
-    """
-    Ensure all values in the column are lists. If a value is not a list,
-    convert it to a list with the value as the only item.
-    """
-    return column.apply(lambda x: x if isinstance(x, list) else [x])
-
-
-# Apply the function to the metadata.data.colors column
-mongo_merge_df["metadata.data.colors"] = ensure_list(
-    mongo_merge_df["metadata.data.colors"]
-)
+# def ensure_list(column):
+#     """
+#     Ensure all values in the column are lists. If a value is not a list,
+#     convert it to a list with the value as the only item.
+#     """
+#     return column.apply(lambda x: x if isinstance(x, list) else [x])
+#
+#
+# # Apply the function to the metadata.data.colors column
+# mongo_merge_df["metadata.data.colors"] = ensure_list(
+#     mongo_merge_df["metadata.data.colors"]
+# )
 
 # chromadb["timestamp"] = (
 #     chromadb["timestamp"].astype(int) if "timestamp" in chromadb.columns else None
@@ -115,6 +115,7 @@ def concat_unique(series):
         return [x for x in series.dropna() if not (x in seen or seen.add(x))]
 
 
+mongo_merge_df = df_ragdb_gs_cards
 # Convert timestamp to datetime and sort
 mongo_merge_df["metadata.timestamp"] = pd.to_datetime(
     mongo_merge_df["metadata.timestamp"]
