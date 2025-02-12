@@ -14,7 +14,7 @@ def main():
     # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
     # df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
     # df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
-    print(df_ragdb_gs_cards.columns)
+    # print(df_ragdb_gs_cards.columns)
 
     st.dataframe(df_ragdb_gs_cards)
     # df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
