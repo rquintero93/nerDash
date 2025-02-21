@@ -12,31 +12,31 @@ import plotly.graph_objs as go
 
 # Define a color map for MTG colors
 MTG_COLOR_MAP = {
-    "W": "#FFFFFF",  # White
-    "U": "#1E90FF",  # Blue
     "B": "#000000",  # Black
-    "R": "#FF0000",  # Red
-    "G": "#008000",  # Green
-    "C": "#D3D3D3",  # Colorless
-    "WU": "#ADD8E6",  # Azorius
-    "WB": "#A9A9A9",  # Orzhov
-    "WR": "#FFA07A",  # Boros
-    "WG": "#98FB98",  # Selesnya
-    "UB": "#4682B4",  # Dimir
-    "UR": "#FF6347",  # Izzet
-    "BR": "#8B0000",  # Rakdos
-    "RG": "#32CD32",  # Gruul
-    "WUG": "#90EE90",  # Bant
-    "WUB": "#87CEEB",  # Esper
-    "UBR": "#8A2BE2",  # Grixis
-    "BRG": "#556B2F",  # Jund
-    "RGW": "#FFD700",  # Naya
-    "WBG": "#9ACD32",  # Abzan
-    "URW": "#FF4500",  # Jeskai
     "BGU": "#2E8B57",  # Sultai
+    "BR": "#8B0000",  # Rakdos
+    "BGR": "#556B2F",  # Jund (was BRG)
     "BRW": "#CD5C5C",  # Mardu
-    "RUG": "#20B2AA",  # Temur
-    "WUBRG": "#DAA520",  # Rainbow
+    "C": "#D3D3D3",  # Colorless
+    "G": "#008000",  # Green
+    "R": "#FF0000",  # Red
+    "GR": "#32CD32",  # Gruul (was RG)
+    "GRW": "#FFD700",  # Naya (was RGW)
+    "GRU": "#20B2AA",  # Temur (was RUG)
+    "U": "#1E90FF",  # Blue
+    "BU": "#4682B4",  # Dimir (was UB)
+    "BRU": "#8A2BE2",  # Grixis (was UBR)
+    "RU": "#FF6347",  # Izzet (was UR)
+    "RUW": "#FF4500",  # Jeskai (was URW)
+    "W": "#FFFFFF",  # White
+    "BW": "#A9A9A9",  # Orzhov (was WB)
+    "BGW": "#9ACD32",  # Abzan (was WBG)
+    "GW": "#98FB98",  # Selesnya (was WG)
+    "RW": "#FFA07A",  # Boros (was WR)
+    "UW": "#ADD8E6",  # Azorius (was WU)
+    "BUW": "#87CEEB",  # Esper (was WUB)
+    "GUW": "#90EE90",  # Bant (was WUG)
+    "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
 def make_bar_chart(data, column=None):
@@ -54,11 +54,15 @@ def make_bar_chart(data, column=None):
     fig.update_traces(marker_line_color='white', marker_line_width=2)
     return fig
 
-def make_pie_chart(df,column):
+def make_pie_chart(df, column):
+    # Ensure color combinations are in the same order as MTG_COLOR_MAP
+    df[column] = df[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
+    
     pie_counts = df[column].value_counts().reset_index()
     pie_counts.columns = [column, 'count']
     
-    fig = px.pie(pie_counts, names=column, values='count')
+    fig = px.pie(pie_counts, names=column, values='count', color=column, 
+                 color_discrete_map=MTG_COLOR_MAP)
     return fig
 
 def make_network_graph(df):
