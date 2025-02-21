@@ -63,7 +63,9 @@ def main():
     st.header("Popular Concept Names")
 
     name_counter = count_concept(df_cards,'name')
-    name_counter_bar_chart = make_bar_chart(name_counter, orientation="h")
+
+    filtered_name_counter = {k: v for k, v in name_counter.items() if v > 2}
+    name_counter_bar_chart = make_bar_chart(filtered_name_counter, orientation="h")
     st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
     st.header("Raw Data")
