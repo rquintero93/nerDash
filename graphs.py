@@ -55,7 +55,12 @@ def make_bar_chart(data,orientation=None, column=None):
                  color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
-    # fig.update_layout(xaxis={'categoryorder':'total descending'})
+    if orientation == 'h':
+        fig.update_layout(
+            height=len(bar_counts) * 25,  # Adjust height based on number of bars
+            margin=dict(l=200),  # Increase left margin for labels
+            bargap=0.15  # Increase spacing between bars
+        )
     return fig
 
 def make_pie_chart(df, column):
