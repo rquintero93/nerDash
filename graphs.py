@@ -50,6 +50,8 @@ def make_bar_chart(data, column=None):
 
     fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
                  color_discrete_map=MTG_COLOR_MAP)
+
+    fig.update_traces(marker_line_color='white', marker_line_width=2)
     return fig
 
 def make_pie_chart(df,column):
