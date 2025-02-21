@@ -19,6 +19,15 @@ def main():
 
     st.dataframe(df_ragdb_gs_cards)
 
+    # Calculate KPIs
+    total_retrieval_count = df_ragdb_gs_cards['retrievalCount'].sum()
+    total_count = df_ragdb_gs_cards['_id'].count()
+    unique_users = df_ragdb_gs_cards['from'].nunique()  # Calculate unique users in 'from' column
+    # Display KPIs
+    st.header("Network Metrics")
+    st.metric(label="Total Count", value=total_count)
+    st.metric(label="Total Retrievals", value=total_retrieval_count)
+    st.metric(label="Total Actions", value=unique_users)
     # Generate and display the pie charts
     st.header("Distribution of Bot IDs")
     botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
