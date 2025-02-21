@@ -30,18 +30,23 @@ def main():
     col2.metric(label="Total Retrievals", value=total_retrieval_count)
     col3.metric(label="Unique Users", value=unique_users)
     col4.metric(label="Total Chats", value=unique_chats)
-    # Generate and display the pie charts
-    st.header("Distribution of Bot IDs")
-    botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
-    st.plotly_chart(botid_pie_chart, use_container_width=True)
+
+    # Generate and display the charts in columns
+    st.header("Distribution Charts")
+    col5, col6, col7 = st.columns(3)
+    with col5:
+        st.subheader("Bot IDs")
+        botid_pie_chart = make_pie_chart(df_ragdb_gs_cards, 'botId')
+        st.plotly_chart(botid_pie_chart, use_container_width=True)
+    with col6:
+        st.subheader("Types")
+        type_pie_chart = make_pie_chart(df_ragdb_gs_cards, 'type')
+        st.plotly_chart(type_pie_chart, use_container_width=True)
  
-    st.header("Distribution of types")
-    type_pie_chart = make_pie_chart(df_ragdb_gs_cards,'type')
-    st.plotly_chart(type_pie_chart, use_container_width=True)
- 
-    st.header("Distribution of actions")
-    type_pie_chart = make_bar_chart(df_ragdb_gs_cards,'action')
-    st.plotly_chart(type_pie_chart, use_container_width=True)
+    with col7:
+        st.subheader("Actions")
+        type_pie_chart = make_bar_chart(df_ragdb_gs_cards,'action')
+        st.plotly_chart(type_pie_chart, use_container_width=True)
  
     # st.header("Merging data...")
     # ragdb_merged_df = pd.merge(
