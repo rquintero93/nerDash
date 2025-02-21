@@ -9,11 +9,22 @@ from collections import Counter
 import pandas as pd
 
 
-def count_concept(df,concept):
+def count_colors(df,concept):
     concept_counter = Counter()
     for concept in df[concept]:
         if concept:
             concept_counter.update(concept)
+    return dict(concept_counter)
+
+def count_concept(df, concept):
+    concept_counter = Counter()
+    for concept_value in df[concept]:
+        if concept_value:
+            # If it's a list, add each item as a single unit
+            if isinstance(concept_value, list):
+                concept_counter.update([tuple(concept_value)])  # Convert list to tuple to make it hashable
+            else:
+                concept_counter.update([concept_value])  # Add the string as a single unit
     return dict(concept_counter)
 
 def clean_timestamp(row):

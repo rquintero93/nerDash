@@ -7,7 +7,7 @@ import streamlit as st
 
 from graphs import make_bar_chart, make_pie_chart
 from mongo import get_mongo_cards
-from utils import clean_colors, count_concept
+from utils import clean_colors, count_colors, count_concept
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
  
     st.header("Primary Color Distribution")
 
-    color_counter = count_concept(df_cards,'colors')
+    color_counter = count_colors(df_cards,'colors')
     color_counter_bar_chart = make_bar_chart(color_counter)
     st.plotly_chart(color_counter_bar_chart, use_container_width=True)
 
@@ -58,6 +58,14 @@ def main():
 
     color_pie_chart = make_pie_chart(df_cards, 'colors')
     st.plotly_chart(color_pie_chart, use_container_width=True)
+
+    
+    st.header("Popular Concept Names")
+
+    name_counter = count_concept(df_cards,'name')
+    name_counter_bar_chart = make_bar_chart(name_counter)
+    st.plotly_chart(name_counter_bar_chart, use_container_width=True)
+
     st.header("Raw Data")
     st.dataframe(df_cards)
 
