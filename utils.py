@@ -9,12 +9,12 @@ from collections import Counter
 import pandas as pd
 
 
-def count_colors(df):
-    color_counter = Counter()
-    for colors in df['colors']:
-        if colors:
-            color_counter.update(colors)
-    return dict(color_counter)
+def count_concept(df,concept):
+    concept_counter = Counter()
+    for concept in df[concept]:
+        if concept:
+            concept_counter.update(concept)
+    return dict(concept_counter)
 
 def clean_timestamp(row):
     try:
