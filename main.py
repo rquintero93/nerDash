@@ -1,7 +1,7 @@
 
 import streamlit as st
 
-from mongo import get_globalstates_cards
+from mongo import get_mongo_cards
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
 
     # Load data
     st.header("Loading data (be patient)...")
-    df_ragdb_gs_cards = get_globalstates_cards()
+    df_ragdb_gs_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
     # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
     # df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
     # df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")

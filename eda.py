@@ -2,13 +2,13 @@ import pandas as pd
 
 from graphs import make_network_dataframe
 # from chromadb import get_chroma
-from mongo import get_globalstates_cards
+from mongo import get_mongo_cards
 
 pd.set_option("display.max_columns", None)
 
-df_ragdb_gs_cards = get_globalstates_cards()
+df_ragdb_gs_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
 # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
-df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
+df_nerdb_gs_cards = get_mongo_cards(db="nerDB")
 # df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
 
 # chromadb = get_chroma(limit=20000, offset=293)

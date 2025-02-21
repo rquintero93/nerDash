@@ -25,49 +25,39 @@ def get_mongo_client() -> MongoClient:
         raise
 
 
-def get_globalstates_cards(
+def get_mongo_cards(
     db: str = "ragDB", target_collection: str = "kengrams"
 ) -> pd.DataFrame:
     """Retrieve cards from the globalstates collection using MongoDB aggregation."""
     client = get_mongo_client()
     collection = client[db][target_collection]
 
-    # pipeline = [
-    #     {
-    #         "$match": {"cards": {"$exists": True, "$not": {"$size": 0}}}
-    #     },  # Ensure "cards" field exists
-    #     {"$unwind": "$cards"},  # Flatten the "cards" array
-    #     {
-    #         "$replaceRoot": {
-    #             "newRoot": {
-    #                 "id": {"$first": {"$objectToArray": "$cards"}},
-    #                 "details": {"$last": {"$objectToArray": "$cards"}},
-    #             }
-    #         }
-    #     },
-    #     {
-    #         "$replaceRoot": {"newRoot": {"id": "$id.k", "details": "$details.v"}}
-    #     },  # Extract key as ID, value as details
-    # ]
-
     pipeline = [
-        {"$match": {}},  # No filter, but can be customized
         {
-            "$project": {"_id": 0}
+            "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
+        },  # Ensure "anchorChange" field exists
+        {"$unwind": "$anchorChange"},  # Flatten the "anchorChange" array
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "$mergeObjects": ["$$ROOT", "$anchorChange"]
+                }
+            }
         },
+        {
+            "$unwind": "$metadata"  # Flatten the "metadata" array
+        },
+        {
+            "$replaceRoot": {
+                "newRoot": {
+                    "$mergeObjects": ["$$ROOT", "$metadata"]
+                }
+            }
+        }
     ]
 
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
-
-    # if "anchorChange" in df.columns:
-    #     anchorChange = pd.json_normalize(df["anchorChange"], sep='_', record_prefix='anchorChange')
-    #     df = pd.concat([df.drop(columns=["anchorChange"]), anchorChange], axis=1)
-    #
-    # if "metadata" in df.columns:
-    #     metadata = pd.json_normalize(df["metadata"], sep='_', record_prefix='metadata')
-    #     df = pd.concat([df.drop(columns=["metadata"]), metadata], axis=1)
-
 
     client.close()
     return df

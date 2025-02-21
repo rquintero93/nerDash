@@ -30,11 +30,11 @@ def get_chroma(limit: int, offset: int) -> pd.DataFrame:
         headers={
             "x-api-key": API_KEY,
         },
-        json={
-            "limit": f"{limit}",
-            "offset": f"{offset}",
-            "include": ["documents", "metadatas"],
-        },
+        # json={
+        #     "limit": f"{limit}",
+        #     "offset": f"{offset}",
+        #     "include": ["documents", "metadatas"],
+        # },
     )
 
     # # Print the status code and response content for debugging
