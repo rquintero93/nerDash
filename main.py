@@ -64,9 +64,9 @@ def main():
 
     name_counter = count_concept(df_cards,'name')
 
-    filtered_name_counter = {k: v for k, v in name_counter.items() if v > 2}
+    filtered_name_counter = {k: v for k, v in name_counter.items() if v > 5}
     name_counter_bar_chart = make_bar_chart(filtered_name_counter, orientation="h")
-    st.plotly_chart(name_counter_bar_chart, use_container_width=True)
+    st.plotly_chart(name_counter_bar_chart, use_container_width=False)
 
     st.header("Raw Data")
     st.dataframe(df_cards)

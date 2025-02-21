@@ -43,6 +43,7 @@ def make_bar_chart(data,orientation=None, column=None):
         bar_counts.columns = [column, 'count']
     elif isinstance(data, dict):
         bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
+        bar_counts = bar_counts.sort_values('count', ascending=False)
     else:
         raise ValueError("Unsupported data type for bar chart")
 
@@ -54,6 +55,7 @@ def make_bar_chart(data,orientation=None, column=None):
                  color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
+    # fig.update_layout(xaxis={'categoryorder':'total descending'})
     return fig
 
 def make_pie_chart(df, column):
