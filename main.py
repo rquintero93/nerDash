@@ -34,7 +34,7 @@ def main():
     col4.metric(label="Total Chats", value=unique_chats)
 
     # Generate and display the charts in columns
-    st.header("Distribution Charts")
+    # st.header("Distribution Charts")
     col5, col6, col7 = st.columns(3)
     with col5:
         st.subheader("Bot IDs")
