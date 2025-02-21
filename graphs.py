@@ -10,6 +10,34 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 
+# Define a color map for MTG colors
+MTG_COLOR_MAP = {
+    "W": "#FFFFFF",  # White
+    "U": "#1E90FF",  # Blue
+    "B": "#000000",  # Black
+    "R": "#FF0000",  # Red
+    "G": "#008000",  # Green
+    "C": "#D3D3D3",  # Colorless
+    "WU": "#ADD8E6",  # Azorius
+    "WB": "#A9A9A9",  # Orzhov
+    "WR": "#FFA07A",  # Boros
+    "WG": "#98FB98",  # Selesnya
+    "UB": "#4682B4",  # Dimir
+    "UR": "#FF6347",  # Izzet
+    "BR": "#8B0000",  # Rakdos
+    "RG": "#32CD32",  # Gruul
+    "WUG": "#90EE90",  # Bant
+    "WUB": "#87CEEB",  # Esper
+    "UBR": "#8A2BE2",  # Grixis
+    "BRG": "#556B2F",  # Jund
+    "RGW": "#FFD700",  # Naya
+    "WBG": "#9ACD32",  # Abzan
+    "URW": "#FF4500",  # Jeskai
+    "BGU": "#2E8B57",  # Sultai
+    "BRW": "#CD5C5C",  # Mardu
+    "RUG": "#20B2AA",  # Temur
+    "WUBRG": "#DAA520",  # Rainbow
+}
 
 def make_bar_chart(data, column=None):
     if isinstance(data, pd.DataFrame):
@@ -20,7 +48,8 @@ def make_bar_chart(data, column=None):
     else:
         raise ValueError("Unsupported data type for bar chart")
 
-    fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count')
+    fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
+                 color_discrete_map=MTG_COLOR_MAP)
     return fig
 
 def make_pie_chart(df,column):
