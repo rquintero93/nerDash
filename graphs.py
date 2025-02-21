@@ -15,7 +15,7 @@ def make_pie_chart(df,column):
     pie_counts = df[column].value_counts().reset_index()
     pie_counts.columns = [column, 'count']
     
-    fig = px.pie(pie_counts, names=column, values='count', title=f'Distribution of {column}')
+    fig = px.pie(pie_counts, names=column, values='count')
     return fig
 
 def make_network_graph(df):
