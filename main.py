@@ -19,7 +19,6 @@ def main():
     st.header("Loading data...")
     df_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
-    st.dataframe(df_cards)
 
     # Calculate KPIs
     total_retrieval_count = df_cards['retrievalCount'].sum()
@@ -56,6 +55,9 @@ def main():
     color_counter = count_colors(df_cards)
     color_counter_pie_chart = make_bar_chart(color_counter)
     st.plotly_chart(color_counter_pie_chart, use_container_width=True)
+
+    st.header("Raw Data")
+    st.dataframe(df_cards)
     # st.header("Merging data...")
     # ragdb_merged_df = pd.merge(
     #     df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"
