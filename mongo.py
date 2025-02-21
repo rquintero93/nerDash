@@ -1,5 +1,5 @@
 """
-Script to explore nerDB MongoDB database.
+Functions to explore MongoDB database.
 """
 
 import os
@@ -15,7 +15,9 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 
 def get_mongo_client() -> MongoClient:
-    """Create and return a MongoDB client."""
+    """
+    Create and return a MongoDB client.
+    """
     try:
         client = MongoClient(MONGO_URI)
         print("MongoDB connected successfully!")
@@ -26,7 +28,10 @@ def get_mongo_client() -> MongoClient:
 
 
 def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
-    """Retrieve cards from the target collection using MongoDB aggregation."""
+    """
+    Retrieve cards from the target collection using MongoDB aggregation.
+    """
+
     client = get_mongo_client()
     collection = client[db][target_collection]
 

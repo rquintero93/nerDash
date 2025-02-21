@@ -1,5 +1,28 @@
+"""
+Utility functions for processing data.
+
+"""
+
+
+from collections import Counter
+
 import pandas as pd
 
+
+def count_colors(df):
+    color_counter = Counter()
+    for colors in df['colors']:
+        if colors:
+            color_counter.update(colors)
+    return dict(color_counter)
+
+def clean_timestamp(row):
+    try:
+        cleaned_ts = pd.to_datetime(row, unit="ms")
+    except Exception as e:
+        print(f"Error converting timestamp: {e}")
+        cleaned_ts = None
+    return cleaned_ts
 
 def clean_colors(row):
     if row is None:

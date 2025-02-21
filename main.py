@@ -1,9 +1,14 @@
+"""
+ Streamlit app for visualizing the AI Thought Network.
+
+"""
+
 
 import streamlit as st
 
 from graphs import make_bar_chart, make_pie_chart
 from mongo import get_mongo_cards
-from utils import clean_colors
+from utils import clean_colors, count_colors
 
 
 def main():
@@ -13,19 +18,15 @@ def main():
     # Load data
     st.header("Loading data...")
     df_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
-    # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
-    # df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
-    # df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
-    # print(df_ragdb_gs_cards.columns)
-
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
     st.dataframe(df_cards)
 
     # Calculate KPIs
     total_retrieval_count = df_cards['retrievalCount'].sum()
     total_count = df_cards['_id'].count()
-    unique_users = df_cards['from'].nunique()  # Calculate unique users in 'from' column
-    unique_chats = df_cards['chatId'].nunique()  # Calculate unique users in 'from' column
+    unique_users = df_cards['from'].nunique()
+    unique_chats = df_cards['chatId'].nunique()
+
     st.header("Network KPIs")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric(label="Total Count", value=total_count)
@@ -50,6 +51,11 @@ def main():
         type_pie_chart = make_bar_chart(df_cards,'action')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
+    st.header("Color Distribution")
+
+    color_counter = count_colors(df_cards)
+    color_counter_pie_chart = make_bar_chart(color_counter)
+    st.plotly_chart(color_counter_pie_chart, use_container_width=True)
     # st.header("Merging data...")
     # ragdb_merged_df = pd.merge(
     #     df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"

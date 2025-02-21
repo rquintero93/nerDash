@@ -11,11 +11,16 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 
-def make_bar_chart(df,column):
-    bar_counts = df[column].value_counts().reset_index()
-    bar_counts.columns = [column, 'count']
-    
-    fig = px.bar(bar_counts, x=column, y='count')
+def make_bar_chart(data, column=None):
+    if isinstance(data, pd.DataFrame):
+        bar_counts = data[column].value_counts().reset_index()
+        bar_counts.columns = [column, 'count']
+    elif isinstance(data, dict):
+        bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
+    else:
+        raise ValueError("Unsupported data type for bar chart")
+
+    fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count')
     return fig
 
 def make_pie_chart(df,column):
