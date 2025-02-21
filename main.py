@@ -10,7 +10,7 @@ def main():
     st.title("AI Thought Network Visualization")
 
     # Load data
-    st.header("Loading data (be patient)...")
+    st.header("Loading data...")
     df_ragdb_gs_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
     # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
     # df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
@@ -23,11 +23,13 @@ def main():
     total_retrieval_count = df_ragdb_gs_cards['retrievalCount'].sum()
     total_count = df_ragdb_gs_cards['_id'].count()
     unique_users = df_ragdb_gs_cards['from'].nunique()  # Calculate unique users in 'from' column
-    st.header("Key Performance Indicators")
-    col1, col2, col3 = st.columns(3)
+    unique_chats = df_ragdb_gs_cards['chatId'].nunique()  # Calculate unique users in 'from' column
+    st.header("Network KPIs")
+    col1, col2, col3, col4 = st.columns(4)
     col1.metric(label="Total Count", value=total_count)
-    col2.metric(label="Total Retrieval Count", value=total_retrieval_count)
+    col2.metric(label="Total Retrievals", value=total_retrieval_count)
     col3.metric(label="Unique Users", value=unique_users)
+    col4.metric(label="Total Chats", value=unique_chats)
     # Generate and display the pie charts
     st.header("Distribution of Bot IDs")
     botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
