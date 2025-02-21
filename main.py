@@ -50,12 +50,16 @@ def main():
         type_pie_chart = make_bar_chart(df_cards,'action')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
-    st.header("Color Distribution")
+    st.header("Primary Color Distribution")
 
     color_counter = count_colors(df_cards)
-    color_counter_pie_chart = make_bar_chart(color_counter)
-    st.plotly_chart(color_counter_pie_chart, use_container_width=True)
+    color_counter_bar_chart = make_bar_chart(color_counter)
+    st.plotly_chart(color_counter_bar_chart, use_container_width=True)
 
+    st.header("Full Color Distribution")
+
+    color_pie_chart = make_pie_chart(df_cards, 'colors')
+    st.plotly_chart(color_pie_chart, use_container_width=True)
     st.header("Raw Data")
     st.dataframe(df_cards)
     # st.header("Merging data...")
