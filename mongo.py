@@ -60,6 +60,8 @@ def get_mongo_cards(
     df = pd.DataFrame(list(cursor))
 
     client.close()
+
+    df = df.drop(columns=["anchorChange", "metadata"])
     return df
 
 

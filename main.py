@@ -17,25 +17,7 @@ def main():
     # print(df_ragdb_gs_cards.columns)
 
     st.dataframe(df_ragdb_gs_cards)
-    # df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["pageContent"])
-    # df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["pageContent"])
-    # df_ragdb_gs_retrievalCount = df_ragdb_gs_retrievalCount.drop(columns=["_id"])
-    # df_nerdb_gs_retrievalCount = df_nerdb_gs_retrievalCount.drop(columns=["_id"])
-    #
-    # id_column_indexes = [
-    #     i for i, col in enumerate(df_ragdb_gs_cards.columns) if col == "id"
-    # ]
-    #
-    # df_ragdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
-    # df_ragdb_gs_cards = df_ragdb_gs_cards.drop(columns=["id_duplicate"])
-    #
-    # id_column_indexes = [
-    #     i for i, col in enumerate(df_nerdb_gs_cards.columns) if col == "id"
-    # ]
-    #
-    # df_nerdb_gs_cards.columns.values[id_column_indexes[1]] = "id_duplicate"
-    # df_nerdb_gs_cards = df_nerdb_gs_cards.drop(columns=["id_duplicate"])
-    # # Merge DataFrames
+
     # st.header("Merging data...")
     # ragdb_merged_df = pd.merge(
     #     df_ragdb_gs_cards, df_ragdb_gs_retrievalCount, on="id", how="left"
