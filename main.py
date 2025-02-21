@@ -25,9 +25,9 @@ def main():
     unique_users = df_cards['from'].nunique()
     unique_chats = df_cards['chatId'].nunique()
 
-    st.header("Network KPIs")
+    # st.header("Network KPIs")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric(label="Total Count", value=total_count)
+    col1.metric(label="Total Cards", value=total_count)
     col2.metric(label="Total Retrievals", value=total_retrieval_count)
     col3.metric(label="Unique Users", value=unique_users)
     col4.metric(label="Total Chats", value=unique_chats)
@@ -60,7 +60,7 @@ def main():
     st.plotly_chart(color_pie_chart, use_container_width=True)
 
     
-    st.header("Popular Concept Names")
+    st.header("Popular Card Names")
 
     name_counter = count_concept(df_cards,'name')
 
