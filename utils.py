@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def clean_colors(row):
     if row is None:
         return None
@@ -126,7 +129,7 @@ def clean_colors(row):
             return None
         # Filter out None values from the list
         strings = [s for s in strings if s is not None]
-        print(sorted(strings), type(strings))
+        # print(sorted(strings), type(strings))
         return sorted(list( set( strings ) ))
 
     return sort_strings( normalized_colors )

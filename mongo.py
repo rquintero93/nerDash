@@ -25,10 +25,8 @@ def get_mongo_client() -> MongoClient:
         raise
 
 
-def get_mongo_cards(
-    db: str = "ragDB", target_collection: str = "kengrams"
-) -> pd.DataFrame:
-    """Retrieve cards from the globalstates collection using MongoDB aggregation."""
+def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
+    """Retrieve cards from the target collection using MongoDB aggregation."""
     client = get_mongo_client()
     collection = client[db][target_collection]
 

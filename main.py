@@ -3,6 +3,7 @@ import streamlit as st
 
 from graphs import make_bar_chart, make_pie_chart
 from mongo import get_mongo_cards
+from utils import clean_colors
 
 
 def main():
@@ -11,19 +12,20 @@ def main():
 
     # Load data
     st.header("Loading data...")
-    df_ragdb_gs_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
+    df_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
     # df_ragdb_gs_retrievalCount = get_globalstates_retrievalCount()
     # df_nerdb_gs_cards = get_globalstates_cards(db="nerDB")
     # df_nerdb_gs_retrievalCount = get_globalstates_retrievalCount(db="nerDB")
     # print(df_ragdb_gs_cards.columns)
 
-    st.dataframe(df_ragdb_gs_cards)
+    df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
+    st.dataframe(df_cards)
 
     # Calculate KPIs
-    total_retrieval_count = df_ragdb_gs_cards['retrievalCount'].sum()
-    total_count = df_ragdb_gs_cards['_id'].count()
-    unique_users = df_ragdb_gs_cards['from'].nunique()  # Calculate unique users in 'from' column
-    unique_chats = df_ragdb_gs_cards['chatId'].nunique()  # Calculate unique users in 'from' column
+    total_retrieval_count = df_cards['retrievalCount'].sum()
+    total_count = df_cards['_id'].count()
+    unique_users = df_cards['from'].nunique()  # Calculate unique users in 'from' column
+    unique_chats = df_cards['chatId'].nunique()  # Calculate unique users in 'from' column
     st.header("Network KPIs")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric(label="Total Count", value=total_count)
@@ -36,16 +38,16 @@ def main():
     col5, col6, col7 = st.columns(3)
     with col5:
         st.subheader("Bot IDs")
-        botid_pie_chart = make_pie_chart(df_ragdb_gs_cards, 'botId')
+        botid_pie_chart = make_pie_chart(df_cards, 'botId')
         st.plotly_chart(botid_pie_chart, use_container_width=True)
     with col6:
         st.subheader("Types")
-        type_pie_chart = make_pie_chart(df_ragdb_gs_cards, 'type')
+        type_pie_chart = make_pie_chart(df_cards, 'type')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     with col7:
         st.subheader("Actions")
-        type_pie_chart = make_bar_chart(df_ragdb_gs_cards,'action')
+        type_pie_chart = make_bar_chart(df_cards,'action')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     # st.header("Merging data...")
