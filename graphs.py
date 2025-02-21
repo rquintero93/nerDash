@@ -7,8 +7,16 @@ import hashlib
 
 import networkx as nx
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objs as go
 
+
+def make_pie_chart(df,column):
+    pie_counts = df[column].value_counts().reset_index()
+    pie_counts.columns = [column, 'count']
+    
+    fig = px.pie(pie_counts, names=column, values='count', title=f'Distribution of {column}')
+    return fig
 
 def make_network_graph(df):
     # Step 1: Parse `metadata.relatedCards` into a list
