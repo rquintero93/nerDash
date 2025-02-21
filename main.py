@@ -1,7 +1,7 @@
 
 import streamlit as st
 
-from graphs import make_pie_chart
+from graphs import make_bar_chart, make_pie_chart
 from mongo import get_mongo_cards
 
 
@@ -19,10 +19,18 @@ def main():
 
     st.dataframe(df_ragdb_gs_cards)
 
-    # Generate and display the pie chart
+    # Generate and display the pie charts
     st.header("Distribution of Bot IDs")
     botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
     st.plotly_chart(botid_pie_chart, use_container_width=True)
+ 
+    st.header("Distribution of types")
+    type_pie_chart = make_pie_chart(df_ragdb_gs_cards,'type')
+    st.plotly_chart(type_pie_chart, use_container_width=True)
+ 
+    st.header("Distribution of actions")
+    type_pie_chart = make_bar_chart(df_ragdb_gs_cards,'action')
+    st.plotly_chart(type_pie_chart, use_container_width=True)
  
     # st.header("Merging data...")
     # ragdb_merged_df = pd.merge(

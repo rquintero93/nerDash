@@ -1,6 +1,6 @@
 import pandas as pd
 
-from graphs import make_pie_chart
+from graphs import make_bar_chart, make_pie_chart
 # from chromadb import get_chroma
 from mongo import get_mongo_cards
 
@@ -157,6 +157,15 @@ def clean_mana_cost(row):
 
 
 
-botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
+# botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
+#
+# botid_pie_chart.show()
 
-botid_pie_chart.show()
+type_pie_chart = make_pie_chart(df_ragdb_gs_cards,'type')
+#
+# type_pie_chart.show()
+
+
+action_bar_chart = make_bar_chart(df_ragdb_gs_cards,'action')
+
+action_bar_chart.show()

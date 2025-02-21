@@ -11,6 +11,13 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 
+def make_bar_chart(df,column):
+    bar_counts = df[column].value_counts().reset_index()
+    bar_counts.columns = [column, 'count']
+    
+    fig = px.bar(bar_counts, x=column, y='count')
+    return fig
+
 def make_pie_chart(df,column):
     pie_counts = df[column].value_counts().reset_index()
     pie_counts.columns = [column, 'count']
