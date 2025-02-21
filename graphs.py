@@ -37,7 +37,7 @@ MTG_COLOR_MAP = {
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
-def make_bar_chart(data, column=None):
+def make_bar_chart(data,orientation=None, column=None):
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
         bar_counts.columns = [column, 'count']
@@ -46,8 +46,12 @@ def make_bar_chart(data, column=None):
     else:
         raise ValueError("Unsupported data type for bar chart")
 
-    fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
-                 color_discrete_map=MTG_COLOR_MAP)
+    if orientation == 'h':
+        fig = px.bar(bar_counts, y=bar_counts.columns[0], x='count', color=bar_counts.columns[0],
+                 color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
+    else:
+        fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
+                 color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
     return fig

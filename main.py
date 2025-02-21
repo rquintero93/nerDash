@@ -45,7 +45,7 @@ def main():
  
     with col7:
         st.subheader("Actions")
-        type_pie_chart = make_bar_chart(df_cards,'action')
+        type_pie_chart = make_bar_chart(df_cards,column='action')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     st.header("Primary Color Distribution")
@@ -63,7 +63,7 @@ def main():
     st.header("Popular Concept Names")
 
     name_counter = count_concept(df_cards,'name')
-    name_counter_bar_chart = make_bar_chart(name_counter)
+    name_counter_bar_chart = make_bar_chart(name_counter, orientation="h")
     st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
     st.header("Raw Data")
