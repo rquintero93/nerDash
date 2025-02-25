@@ -59,7 +59,12 @@ def make_bar_chart(data,orientation=None, column=None):
         fig.update_layout(
             height=len(bar_counts) * 25,  # Adjust height based on number of bars
             margin=dict(l=200),  # Increase left margin for labels
-            bargap=0.15  # Increase spacing between bars
+            bargap=0.15,  # Increase spacing between bars
+            showlegend=False
+        )
+    else:
+        fig.update_layout(
+            showlegend=False
         )
     return fig
 
