@@ -42,7 +42,7 @@ def make_bar_chart(data,orientation=None, column=None):
         bar_counts = data[column].value_counts().reset_index()
         bar_counts.columns = [column, 'count']
     elif isinstance(data, dict):
-        bar_counts = pd.DataFrame(list(data.items()), columns=[column, 'count'])
+        bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
         bar_counts = bar_counts.sort_values('count', ascending=False)
     else:
         raise ValueError("Unsupported data type for bar chart")
