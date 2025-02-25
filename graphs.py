@@ -77,6 +77,9 @@ def make_pie_chart(df, column):
     
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
                  color_discrete_map=MTG_COLOR_MAP)
+
+    fig.update_traces(textinfo='percent+label', insidetextorientation='auto')
+
     return fig
 
 
