@@ -35,81 +35,48 @@ def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
     client = get_mongo_client()
     collection = client[db][target_collection]
 
-    pipeline = [
-        {
-            "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
-        },  # Ensure "anchorChange" field exists
-        {"$unwind": "$anchorChange"},  # Flatten the "anchorChange" array
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "$mergeObjects": ["$$ROOT", "$anchorChange"]
+    if target_collection == "kengrams":
+        pipeline = [
+            {
+                "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
+            },  # Ensure "anchorChange" field exists
+            {"$unwind": "$anchorChange"},  # Flatten the "anchorChange" array
+            {
+                "$replaceRoot": {
+                    "newRoot": {
+                        "$mergeObjects": ["$$ROOT", "$anchorChange"]
+                    }
+                }
+            },
+            {
+                "$unwind": "$metadata"  # Flatten the "metadata" array
+            },
+            {
+                "$replaceRoot": {
+                    "newRoot": {
+                        "$mergeObjects": ["$$ROOT", "$metadata"]
+                    }
                 }
             }
-        },
-        {
-            "$unwind": "$metadata"  # Flatten the "metadata" array
-        },
-        {
-            "$replaceRoot": {
-                "newRoot": {
-                    "$mergeObjects": ["$$ROOT", "$metadata"]
-                }
-            }
-        }
-    ]
+        ]
 
-    cursor = collection.aggregate(pipeline)
-    df = pd.DataFrame(list(cursor))
+        cursor = collection.aggregate(pipeline)
+        df = pd.DataFrame(list(cursor))
 
-    client.close()
+        client.close()
 
-    df = df.drop(columns=["anchorChange", "metadata"])
-    return df
+        df = df.drop(columns=["anchorChange", "metadata"])
 
+        return df
+    else:
+        
+        pipeline = [
+        {"$match": {}},
+        ]
 
-def get_globalstates_retrievalCount(
-    db: str = "ragDB", target_collection: str = "kengrams"
-) -> pd.DataFrame:
-    """Retrieve retrievalCount data from the globalstates collection using MongoDB aggregation."""
-    client = get_mongo_client()
-    collection = client[db][target_collection]
+        cursor = collection.aggregate(pipeline)
+        df = pd.DataFrame(list(cursor))
 
-    pipeline = [
-        {"$match": {"retrievalCount": {"$exists": True}}},
-        {
-            "$project": {"retrievalCount": {"$objectToArray": "$retrievalCount"}}
-        },  # Convert to key-value array
-        {"$unwind": "$retrievalCount"},  # Flatten retrievalCount dictionary
-        {
-            "$project": {
-                "id": "$retrievalCount.k",
-                "retrievalCount": "$retrievalCount.v",
-            }
-        },  # Extract ID & count
-    ]
+        client.close()
 
-    cursor = collection.aggregate(pipeline)
-    df = pd.DataFrame(list(cursor))
-
-    client.close()
-    return df
-
-
-def get_history(db: str = "ragDB", target_collection: str = "history") -> pd.DataFrame:
-    """Retrieve the history collection efficiently."""
-    client = get_mongo_client()
-    collection = client[db][target_collection]
-
-    pipeline = [
-        {"$match": {}},  # No filter, but can be customized
-        {
-            "$project": {"_id": 0}
-        },  # Remove MongoDB default `_id` field for cleaner DataFrame
-    ]
-
-    cursor = collection.aggregate(pipeline)
-    df = pd.DataFrame(list(cursor))
-
-    client.close()
-    return df
+        return df
