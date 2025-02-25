@@ -58,7 +58,7 @@ def main():
     with col8:
         st.header("Full Color Distribution")
 
-        color_pie_chart = make_pie_chart(df_cards, 'colors')
+        color_pie_chart = make_pie_chart(df_cards, 'colors',show_legend=False)
         st.plotly_chart(color_pie_chart, use_container_width=True)
 
     
