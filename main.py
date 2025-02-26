@@ -3,6 +3,7 @@
 
 """
 
+import pandas as pd
 import streamlit as st
 
 from models.mongo import get_mongo_cards
@@ -16,7 +17,9 @@ def main():
 
     # Load data
     st.header("Loading data...")
-    df_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
+    ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
+    nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
+    df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
 
     # Calculate KPIs
@@ -63,7 +66,7 @@ def main():
     with col9:
         st.header("Popular Card Names")
         name_counter = count_concept(df_cards,'name')
-        filtered_name_counter = {k: v for k, v in name_counter.items() if v > 5}
+        filtered_name_counter = {k: v for k, v in name_counter.items() if v > 15}
         name_counter_bar_chart = make_bar_chart(data=filtered_name_counter, orientation="h")
         st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
