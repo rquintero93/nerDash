@@ -16,7 +16,7 @@ def main():
 
     # Load data
     st.header("Loading data...")
-    df_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
+    df_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
 
     # Calculate KPIs

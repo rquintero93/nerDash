@@ -7,7 +7,7 @@ from views.graphs import make_bar_chart, make_pie_chart
 
 pd.set_option("display.max_columns", None)
 
-df_cards = get_mongo_cards(db="ragDB",target_collection="kengrams")
+df_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
 
 df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
 # botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
