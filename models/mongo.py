@@ -30,6 +30,10 @@ def get_mongo_client() -> MongoClient:
 def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
+
+    Args: 
+        db (str): The database name
+        target_collection (str): The target collection to query
     """
 
     client = get_mongo_client()

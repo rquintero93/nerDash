@@ -37,7 +37,7 @@ MTG_COLOR_MAP = {
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
-def make_bar_chart(data,orientation=None, column=None):
+def make_bar_chart(data,orientation=None, column=None) -> px.bar:
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
         bar_counts.columns = [column, 'count']
@@ -68,11 +68,11 @@ def make_bar_chart(data,orientation=None, column=None):
         )
     return fig
 
-def make_pie_chart(df, column,show_legend=None):
+def make_pie_chart(data, column,show_legend=None) -> px.pie:
     # Ensure color combinations are in the same order as MTG_COLOR_MAP
-    df[column] = df[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
+    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
     
-    pie_counts = df[column].value_counts().reset_index()
+    pie_counts = data[column].value_counts().reset_index()
     pie_counts.columns = [column, 'count']
     
     fig = px.pie(pie_counts, names=column, values='count', color=column, 

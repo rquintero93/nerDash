@@ -9,9 +9,9 @@ from collections import Counter
 import pandas as pd
 
 
-def count_colors(df,concept):
+def count_colors(data,concept):
     concept_counter = Counter()
-    for concept in df[concept]:
+    for concept in data[concept]:
         if concept:
             concept_counter.update(concept)
     return dict(concept_counter)
@@ -180,7 +180,7 @@ def make_agg_df(mongo_merge_df):
         "metadata.data.flavorText": concat_unique,
         "metadata.data.power": concat_unique,
         "metadata.data.toughness": concat_unique,
-        "metadata.timestamp": concat_unique,  # Ensures order from sorted dataframe
+        "metadata.timestamp": concat_unique,
         "metadata.chatId": concat_unique,
         "metadata.userId": concat_unique,
         "metadata.botId": concat_unique,

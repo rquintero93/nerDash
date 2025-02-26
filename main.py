@@ -5,9 +5,9 @@
 
 import streamlit as st
 
-from graphs import make_bar_chart, make_pie_chart
-from mongo import get_mongo_cards
-from utils import clean_colors, count_colors, count_concept
+from models.mongo import get_mongo_cards
+from utils.utils import clean_colors, count_colors, count_concept
+from views.graphs import make_bar_chart, make_pie_chart
 
 
 def main():
@@ -36,39 +36,35 @@ def main():
     col5, col6, col7 = st.columns(3)
     with col5:
         st.subheader("Bot IDs")
-        botid_pie_chart = make_pie_chart(df_cards, 'botId')
+        botid_pie_chart = make_pie_chart(data=df_cards, column='botId')
         st.plotly_chart(botid_pie_chart, use_container_width=True)
     with col6:
         st.subheader("Types")
-        type_pie_chart = make_pie_chart(df_cards, 'type')
+        type_pie_chart = make_pie_chart(data=df_cards, column='type')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     with col7:
         st.subheader("Actions")
-        type_pie_chart = make_bar_chart(df_cards,column='action')
+        type_pie_chart = make_bar_chart(data=df_cards,column='action')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     st.header("Primary Color Distribution")
-
-    color_counter = count_colors(df_cards,'colors')
-    color_counter_bar_chart = make_bar_chart(color_counter)
+    color_counter = count_colors(data=df_cards,concept='colors')
+    color_counter_bar_chart = make_bar_chart(data=color_counter)
     st.plotly_chart(color_counter_bar_chart, use_container_width=True)
 
     col8, col9 = st.columns(2)
     with col8:
         st.header("Full Color Distribution")
-
-        color_pie_chart = make_pie_chart(df_cards, 'colors',show_legend=False)
+        color_pie_chart = make_pie_chart(data=df_cards, column='colors',show_legend=False)
         st.plotly_chart(color_pie_chart, use_container_width=True)
 
     
     with col9:
         st.header("Popular Card Names")
-
         name_counter = count_concept(df_cards,'name')
-
         filtered_name_counter = {k: v for k, v in name_counter.items() if v > 5}
-        name_counter_bar_chart = make_bar_chart(filtered_name_counter, orientation="h")
+        name_counter_bar_chart = make_bar_chart(data=filtered_name_counter, orientation="h")
         st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
     st.header("Raw Data")
