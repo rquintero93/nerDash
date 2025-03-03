@@ -66,7 +66,7 @@ def main():
     with col9:
         st.header("Popular Card Names")
         name_counter = count_concept(df_cards,'name')
-        filtered_name_counter = {k: v for k, v in name_counter.items() if v > 15}
+        filtered_name_counter = dict(sorted(name_counter.items(), key=lambda item: item[1], reverse=True)[:20])
         name_counter_bar_chart = make_bar_chart(data=filtered_name_counter, orientation="h")
         st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
