@@ -37,7 +37,7 @@ MTG_COLOR_MAP = {
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
-def make_bar_chart(data,orientation=None, column=None) -> px.bar:
+def make_bar_chart(data, orientation=None, column=None) -> px.bar:
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
         bar_counts.columns = [column, 'count']
@@ -49,37 +49,46 @@ def make_bar_chart(data,orientation=None, column=None) -> px.bar:
 
     if orientation == 'h':
         fig = px.bar(bar_counts, y=bar_counts.columns[0], x='count', color=bar_counts.columns[0],
-                 color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
+                     color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
     else:
         fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
-                 color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
+                     color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
+    
+    # Truncate legend labels
+    for trace in fig.data:
+        trace.name = trace.name[:15]
+    
+    layout_updates = {
+        "showlegend": True
+    }
     if orientation == 'h':
-        fig.update_layout(
-            height=len(bar_counts) * 25,  # Adjust height based on number of bars
-            margin=dict(l=200),  # Increase left margin for labels
-            bargap=0.15,  # Increase spacing between bars
-            showlegend=True
-        )
-    else:
-        fig.update_layout(
-            showlegend=True
-        )
+        layout_updates.update({
+            "height": len(bar_counts) * 25,
+            "margin": dict(l=200),
+            "bargap": 0.15
+        })
+    
+    fig.update_layout(**layout_updates)
     return fig
 
-def make_pie_chart(data, column,show_legend=None) -> px.pie:
-    # Ensure color combinations are in the same order as MTG_COLOR_MAP
+
+def make_pie_chart(data, column, show_legend=None) -> px.pie:
     data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
     
     pie_counts = data[column].value_counts().reset_index()
     pie_counts.columns = [column, 'count']
     
+    # Truncate legend labels before passing to Plotly
+    pie_counts[column] = pie_counts[column].str[:15]
+    
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
                  color_discrete_map=MTG_COLOR_MAP)
 
-    fig.update_traces(textinfo='percent',textposition='inside', insidetextorientation='auto',showlegend=show_legend)
-
+    fig.update_traces(textinfo='percent', textposition='inside', 
+                      insidetextorientation='auto', showlegend=show_legend)
+    
     return fig
 
 
