@@ -4,6 +4,8 @@ Graphing functions for the AI Thought Network.
 """
 
 
+from typing import Optional, Union
+
 import networkx as nx
 import pandas as pd
 import plotly.express as px
@@ -37,13 +39,23 @@ MTG_COLOR_MAP = {
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
-def make_bar_chart(data, orientation=None, column=None) -> px.bar:
+def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation: Optional[str]=None, column: Optional[str]=None) -> Optional[px.bar]:
+
+    if data is None:
+        return None
+
+    # Ensure it's a valid DataFrame
+    if not isinstance(data, pd.DataFrame) or not isinstance(data, dict):
+        raise ValueError("Data must be a pandas DataFrame or a dictionary that can be converted to one.")
+        
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
         bar_counts.columns = [column, 'count']
+
     elif isinstance(data, dict):
         bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
         bar_counts = bar_counts.sort_values('count', ascending=False)
+
     else:
         raise ValueError("Unsupported data type for bar chart")
 
@@ -74,7 +86,18 @@ def make_bar_chart(data, orientation=None, column=None) -> px.bar:
     return fig
 
 
-def make_pie_chart(data, column, show_legend=None) -> px.pie:
+def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Optional[str]=None) -> Optional[px.pie]:
+
+    if data is None:
+        return None
+
+    # Ensure it's a valid DataFrame
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("Data must be a pandas DataFrame.")
+
+    if not isinstance(column, str):
+        raise ValueError("Column must be a string.")
+
     data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
     
     pie_counts = data[column].value_counts().reset_index()
