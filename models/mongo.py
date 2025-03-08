@@ -69,7 +69,8 @@ def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
 
         client.close()
 
-        df = df.drop(columns=["anchorChange", "metadata"])
+        if "anchorChange" in df.columns and "metadata" in df.columns:
+            df = df.drop(columns=["anchorChange", "metadata"])
 
         return df
     else:
