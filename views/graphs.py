@@ -44,9 +44,9 @@ def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation
     if data is None:
         return None
 
-    # # Ensure it's a valid DataFrame
-    # if not isinstance(data, pd.DataFrame) or not isinstance(data, dict):
-    #     raise ValueError("Data must be a pandas DataFrame or a dictionary that can be converted to one.")
+    # Ensure it's a valid DataFrame
+    if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
+        raise ValueError("Data must be a pandas DataFrame or a dictionary that can be converted to one.")
         
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
