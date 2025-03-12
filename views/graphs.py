@@ -39,12 +39,19 @@ MTG_COLOR_MAP = {
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
 
-def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation: Optional[str]=None, column: Optional[str]=None) -> Optional[px.bar]:
+def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: Optional[str]=None) -> px.bar:
+    '''
+    Creates a plotly bar chart with some default settings.
+
+    Args:
+        data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
+        orientation (Optional[str]): The orientation of the bar chart. Defaults to vertical, pass 'h' for horizontal.
+        column (Optional[str]): The column to plot from the DataFrame.
+    '''
 
     if data is None:
         return None
 
-    # Ensure it's a valid DataFrame
     if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
         raise ValueError("Data must be a pandas DataFrame or a dictionary that can be converted to one.")
         
@@ -59,12 +66,14 @@ def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation
     else:
         raise ValueError("Unsupported data type for bar chart")
 
-    if orientation == 'h':
-        fig = px.bar(bar_counts, y=bar_counts.columns[0], x='count', color=bar_counts.columns[0],
-                     color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
-    else:
-        fig = px.bar(bar_counts, x=bar_counts.columns[0], y='count', color=bar_counts.columns[0],
-                     color_discrete_map=MTG_COLOR_MAP, orientation=orientation)
+    fig = px.bar(
+        bar_counts,
+        x='count' if orientation == 'h' else bar_counts.columns[0],
+        y=bar_counts.columns[0] if orientation == 'h' else 'count',
+        color=bar_counts.columns[0],
+        color_discrete_map=MTG_COLOR_MAP,
+        orientation=orientation
+    )
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
     
@@ -75,6 +84,7 @@ def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation
     layout_updates = {
         "showlegend": True
     }
+
     if orientation == 'h':
         layout_updates.update({
             "height": len(bar_counts) * 25,
@@ -86,7 +96,16 @@ def make_bar_chart(data: Optional[Union[pd.DataFrame, dict]] = None, orientation
     return fig
 
 
-def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Optional[str]=None) -> Optional[px.pie]:
+def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Optional[str]=None) -> px.pie:
+
+    '''
+    Creates a plotly pie chart with some default settings.
+
+    Args:
+        data (pd.DataFrame): The data to plot.
+        column (str): The column to plot from the DataFrame.
+        show_legend (Optional[str]): Whether to show the legend. Defaults to True.
+    '''
 
     if data is None:
         return None
