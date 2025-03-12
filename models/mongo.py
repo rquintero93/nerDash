@@ -2,25 +2,22 @@
 Functions to explore MongoDB database.
 """
 
-import os
-
 import pandas as pd
-from dotenv import load_dotenv
 from pymongo import MongoClient
 
 import models.queries as queries
-
-dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
-load_dotenv(dotenv_path)
-MONGO_URI = os.getenv("MONGO_URI")
+import utils.constants as constants
 
 
-def get_mongo_client() -> MongoClient:
+def get_mongo_client(connection_url:str) -> MongoClient:
     """
     Create and return a MongoDB client.
+
+    Args:
+        connection_url (str): MongoDB connection URI. defined in .env in constants module
     """
     try:
-        client = MongoClient(MONGO_URI)
+        client = MongoClient(connection_url)
         print("MongoDB connected successfully!")
         return client
     except Exception as e:
@@ -37,7 +34,7 @@ def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
         target_collection (str): The target collection to query
     """
 
-    client = get_mongo_client()
+    client = get_mongo_client(constants.MONGO_URI)
     collection = client[db][target_collection]
 
     if target_collection == "kengrams":

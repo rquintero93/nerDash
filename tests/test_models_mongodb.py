@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pandas as pd
 
+import utils.constants as constants
 from models.mongo import get_mongo_cards, get_mongo_client
 
 
@@ -9,7 +10,7 @@ def test_get_mongo_client(mocker):
     mock_client = mocker.patch("models.mongo.MongoClient", autospec=True)
     client_instance = mock_client.return_value
     
-    client = get_mongo_client()
+    client = get_mongo_client(constants.MONGO_URI)
     
     assert client == client_instance
     mock_client.assert_called_once()

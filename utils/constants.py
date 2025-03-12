@@ -2,6 +2,16 @@
 Constants used in the project
 
 '''
+
+import os
+
+from dotenv import load_dotenv
+
+#Mognodb connection string
+dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
+load_dotenv(dotenv_path)
+MONGO_URI = os.getenv("MONGO_URI")
+
 # Define a color map for MTG colors
 MTG_COLOR_MAP = {
     "B": "#000000",  # Black
