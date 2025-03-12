@@ -6,7 +6,7 @@ Graphing functions for the AI Thought Network.
 
 from typing import Optional, Union
 
-import networkx as nx
+# import networkx as nx
 import pandas as pd
 import plotly.express as px
 
@@ -23,6 +23,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         column (Optional[str]): The column to plot from the DataFrame.
     '''
 
+    #input validation
     if data is None:
         return None
 
@@ -40,6 +41,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     else:
         raise ValueError("Unsupported data type for bar chart")
 
+    # Create the bar chart
     fig = px.bar(
         bar_counts,
         x='count' if orientation == 'h' else bar_counts.columns[0],
@@ -81,6 +83,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
         show_legend (Optional[str]): Whether to show the legend. Defaults to True.
     '''
 
+    #input validation
     if data is None:
         return None
 
@@ -91,6 +94,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
     if not isinstance(column, str):
         raise ValueError("Column must be a string.")
 
+    #data processing
     data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
     
     pie_counts = data[column].value_counts().reset_index()
@@ -99,6 +103,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
     # Truncate legend labels before passing to Plotly
     pie_counts[column] = pie_counts[column].str[:15]
     
+    # Create the pie chart
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
                  color_discrete_map=constants.MTG_COLOR_MAP)
 
@@ -108,81 +113,81 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
     return fig
 
 
-def make_network_dataframe(df):
-    #     # Prepare the analytical DataFrame from the graph
-
-    G = nx.DiGraph()
-    valid_nodes = {}  # Stores nodes with valid aggregated IDs
-
-    # Step 1: Create nodes indexed by name but store ID references
-    for _, row in df.iterrows():
-        node_name = row.get("metadata.data.name", "Unknown")
-        if not node_name:
-            continue  # Skip rows with no name
-
-        if row["retrievalCount"] == 0:
-            continue
-
-        ids = row["id"] if isinstance(row["id"], list) else [row["id"]]
-        if len(ids) == 0:
-            continue  # Skip nodes with no associated IDs
-
-        valid_nodes[node_name] = {
-            "name": node_name,
-            "node_type": row.get("metadata.data.type", "Unknown"),
-            "colors": row.get("metadata.data.colors", "Unknown"),
-            "mana_cost": row.get("metadata.data.manaCost", "Unknown"),
-            "retrievalCount": row.get("retrievalCount", "Unknown"),
-            "ids": set(ids),  # Store as a set for quick lookup
-        }
-
-    # Add nodes to the graph
-    for node_name, attributes in valid_nodes.items():
-        G.add_node(node_name, **attributes)
-
-    # Step 2: Add edges only if relatedCards match valid IDs in other nodes
-    for node_name, attributes in valid_nodes.items():
-        related_ids = df.loc[
-            df["metadata.data.name"] == node_name, "metadata.relatedCards"
-        ].values[0]
-
-        if isinstance(related_ids, list):
-            for related_id in related_ids:
-                for target_name, target_attrs in valid_nodes.items():
-                    if related_id in target_attrs["ids"]:  # Match ID in other nodes
-                        G.add_edge(node_name, target_name)
-
-    # Debugging output
-    # print(f"Total Nodes in Graph: {len(G.nodes)}")
-    # print(f"Total Edges in Graph: {len(G.edges)}")
-
-    # If no valid nodes remain, return None
-    if len(G.nodes) == 0:
-        print("No valid nodes remain. Returning None.")
-        return None
-
-    # Compute layout
-    # pos = nx.spring_layout(G, seed=42, k=0.5)
-
-    graph_data = []
-    for node, data in G.nodes(data=True):
-        graph_data.append(
-            {
-                "name": data["name"],
-                "type": data.get("node_type", "Unknown"),
-                "colors": data.get("colors", "Unknown"),
-                "mana_cost": data.get("mana_cost", "Unknown"),
-                "retrievalCount": data.get("retrievalCount", 0),
-                "associated_IDs_count": len(data.get("ids", [])),
-                "connected_concepts_count": G.degree(
-                    node
-                ),  # Number of connected concepts
-            }
-        )
-
-    # Convert to DataFrame
-    graph_df = pd.DataFrame(graph_data)
-    return graph_df
+# def make_network_dataframe(df):
+#     #     # Prepare the analytical DataFrame from the graph
+#
+#     G = nx.DiGraph()
+#     valid_nodes = {}  # Stores nodes with valid aggregated IDs
+#
+#     # Step 1: Create nodes indexed by name but store ID references
+#     for _, row in df.iterrows():
+#         node_name = row.get("metadata.data.name", "Unknown")
+#         if not node_name:
+#             continue  # Skip rows with no name
+#
+#         if row["retrievalCount"] == 0:
+#             continue
+#
+#         ids = row["id"] if isinstance(row["id"], list) else [row["id"]]
+#         if len(ids) == 0:
+#             continue  # Skip nodes with no associated IDs
+#
+#         valid_nodes[node_name] = {
+#             "name": node_name,
+#             "node_type": row.get("metadata.data.type", "Unknown"),
+#             "colors": row.get("metadata.data.colors", "Unknown"),
+#             "mana_cost": row.get("metadata.data.manaCost", "Unknown"),
+#             "retrievalCount": row.get("retrievalCount", "Unknown"),
+#             "ids": set(ids),  # Store as a set for quick lookup
+#         }
+#
+#     # Add nodes to the graph
+#     for node_name, attributes in valid_nodes.items():
+#         G.add_node(node_name, **attributes)
+#
+#     # Step 2: Add edges only if relatedCards match valid IDs in other nodes
+#     for node_name, attributes in valid_nodes.items():
+#         related_ids = df.loc[
+#             df["metadata.data.name"] == node_name, "metadata.relatedCards"
+#         ].values[0]
+#
+#         if isinstance(related_ids, list):
+#             for related_id in related_ids:
+#                 for target_name, target_attrs in valid_nodes.items():
+#                     if related_id in target_attrs["ids"]:  # Match ID in other nodes
+#                         G.add_edge(node_name, target_name)
+#
+#     # Debugging output
+#     # print(f"Total Nodes in Graph: {len(G.nodes)}")
+#     # print(f"Total Edges in Graph: {len(G.edges)}")
+#
+#     # If no valid nodes remain, return None
+#     if len(G.nodes) == 0:
+#         print("No valid nodes remain. Returning None.")
+#         return None
+#
+#     # Compute layout
+#     # pos = nx.spring_layout(G, seed=42, k=0.5)
+#
+#     graph_data = []
+#     for node, data in G.nodes(data=True):
+#         graph_data.append(
+#             {
+#                 "name": data["name"],
+#                 "type": data.get("node_type", "Unknown"),
+#                 "colors": data.get("colors", "Unknown"),
+#                 "mana_cost": data.get("mana_cost", "Unknown"),
+#                 "retrievalCount": data.get("retrievalCount", 0),
+#                 "associated_IDs_count": len(data.get("ids", [])),
+#                 "connected_concepts_count": G.degree(
+#                     node
+#                 ),  # Number of connected concepts
+#             }
+#         )
+#
+#     # Convert to DataFrame
+#     graph_df = pd.DataFrame(graph_data)
+#     return graph_df
 
 
 # def make_network_graph(df):
