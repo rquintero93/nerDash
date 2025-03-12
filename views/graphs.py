@@ -10,34 +10,8 @@ import networkx as nx
 import pandas as pd
 import plotly.express as px
 
-# Define a color map for MTG colors
-MTG_COLOR_MAP = {
-    "B": "#000000",  # Black
-    "BGU": "#2E8B57",  # Sultai
-    "BR": "#8B0000",  # Rakdos
-    "BGR": "#556B2F",  # Jund (was BRG)
-    "BRW": "#CD5C5C",  # Mardu
-    "C": "#D3D3D3",  # Colorless
-    "G": "#008000",  # Green
-    "R": "#FF0000",  # Red
-    "GR": "#32CD32",  # Gruul (was RG)
-    "GRW": "#FFD700",  # Naya (was RGW)
-    "GRU": "#20B2AA",  # Temur (was RUG)
-    "U": "#1E90FF",  # Blue
-    "BU": "#4682B4",  # Dimir (was UB)
-    "BRU": "#8A2BE2",  # Grixis (was UBR)
-    "RU": "#FF6347",  # Izzet (was UR)
-    "RUW": "#FF4500",  # Jeskai (was URW)
-    "W": "#FFFFFF",  # White
-    "BW": "#A9A9A9",  # Orzhov (was WB)
-    "BGW": "#9ACD32",  # Abzan (was WBG)
-    "GW": "#98FB98",  # Selesnya (was WG)
-    "RW": "#FFA07A",  # Boros (was WR)
-    "UW": "#ADD8E6",  # Azorius (was WU)
-    "BUW": "#87CEEB",  # Esper (was WUB)
-    "GUW": "#90EE90",  # Bant (was WUG)
-    "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
-}
+import utils.constants as constants
+
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: Optional[str]=None) -> px.bar:
     '''
@@ -71,7 +45,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         x='count' if orientation == 'h' else bar_counts.columns[0],
         y=bar_counts.columns[0] if orientation == 'h' else 'count',
         color=bar_counts.columns[0],
-        color_discrete_map=MTG_COLOR_MAP,
+        color_discrete_map=constants.MTG_COLOR_MAP,
         orientation=orientation
     )
 
@@ -126,7 +100,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
     pie_counts[column] = pie_counts[column].str[:15]
     
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
-                 color_discrete_map=MTG_COLOR_MAP)
+                 color_discrete_map=constants.MTG_COLOR_MAP)
 
     fig.update_traces(textinfo='percent', textposition='inside', 
                       insidetextorientation='auto', showlegend=show_legend)
