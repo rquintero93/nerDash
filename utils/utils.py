@@ -9,14 +9,14 @@ from collections import Counter
 import pandas as pd
 
 
-def count_colors(data,concept):
+def count_colors(data : pd.DataFrame,concept : str) -> dict:
     concept_counter = Counter()
     for concept in data[concept]:
         if concept:
             concept_counter.update(concept)
     return dict(concept_counter)
 
-def count_concept(df, concept):
+def count_concept(df : pd.DataFrame, concept : str) -> dict:
     concept_counter = Counter()
     for concept_value in df[concept]:
         if concept_value:
@@ -27,7 +27,7 @@ def count_concept(df, concept):
                 concept_counter.update([concept_value])  # Add the string as a single unit
     return dict(concept_counter)
 
-def clean_timestamp(row):
+def clean_timestamp(row : pd.Series) -> pd.Timestamp:
     try:
         cleaned_ts = pd.to_datetime(row, unit="ms")
     except Exception as e:
@@ -35,7 +35,13 @@ def clean_timestamp(row):
         cleaned_ts = None
     return cleaned_ts
 
-def clean_colors(row):
+def sort_strings(strings:list) -> list:
+    if strings is None:
+        return None
+    strings = [s for s in strings if s is not None]
+    return sorted(list(set(strings)))
+
+def clean_colors(row: pd.Series) -> list:
     if row is None:
         return None
     normalized_colors = []
@@ -105,15 +111,10 @@ def clean_colors(row):
                     else:
                         normalized_colors.append("Colorless")
 
-    def sort_strings(strings):
-        if strings is None:
-            return None
-        strings = [s for s in strings if s is not None]
-        return sorted(list(set(strings)))
 
     return sort_strings(normalized_colors)
 
-def clean_mana_cost(row):
+def clean_mana_cost(row : pd.Series) -> set:
     if row is None:
         return None
     normalized_mana_cost = []
@@ -128,72 +129,72 @@ def clean_mana_cost(row):
 
 
 
-def make_agg_df(mongo_merge_df):
-
-    def concat_unique(series):
-        """Ensure lists remain lists, and unique values are preserved."""
-        if series.apply(lambda x: isinstance(x, list)).any():
-            unique_items = set()
-            result = []
-            for sublist in series.dropna():
-                for item in sublist:
-                    if item not in unique_items:
-                        unique_items.add(item)
-                        result.append(item)
-            return result  # Keep as a list
-
-        elif series.dtype == "object":
-            seen = set()
-            result = [
-                item
-                for sublist in series.dropna().astype(str)
-                for item in sublist.split("; ")
-                if not (item in seen or seen.add(item))
-            ]
-            return result  # Keep as list
-
-        else:
-            seen = set()
-            return [x for x in series.dropna() if not (x in seen or seen.add(x))]
-
-    # Convert timestamp to datetime and sort
-    mongo_merge_df["metadata.timestamp"] = pd.to_datetime(
-        mongo_merge_df["metadata.timestamp"]
-    )
-    mongo_merge_df = mongo_merge_df.sort_values("metadata.timestamp")
-
-    # Convert `id` column to string
-    mongo_merge_df["id"] = mongo_merge_df["id"].astype(str)
-    mongo_merge_df["metadata.timestamp"] = mongo_merge_df["metadata.timestamp"].astype(
-        str
-    )
-
-    # Define aggregation functions
-    agg_funcs = {
-        "retrievalCount": "sum",
-        "id": concat_unique,
-        "metadata.data.colors": concat_unique,
-        "metadata.data.manaCost": concat_unique,
-        "metadata.data.type": concat_unique,
-        "metadata.data.subtypes": concat_unique,
-        "metadata.data.text": concat_unique,
-        "metadata.data.flavorText": concat_unique,
-        "metadata.data.power": concat_unique,
-        "metadata.data.toughness": concat_unique,
-        "metadata.timestamp": concat_unique,
-        "metadata.chatId": concat_unique,
-        "metadata.userId": concat_unique,
-        "metadata.botId": concat_unique,
-        "metadata.relatedCards": concat_unique,
-        "metadata.relatedLore": concat_unique,
-    }
-
-    # Group by 'metadata.data.name' and aggregate
-    mongo_agg_df = mongo_merge_df.groupby("metadata.data.name", sort=False).agg(
-        agg_funcs
-    )
-
-    # Reset index if needed
-    mongo_agg_df = mongo_agg_df.reset_index()
-
-    return mongo_agg_df
+# def make_agg_df(mongo_merge_df):
+#
+#     def concat_unique(series):
+#         """Ensure lists remain lists, and unique values are preserved."""
+#         if series.apply(lambda x: isinstance(x, list)).any():
+#             unique_items = set()
+#             result = []
+#             for sublist in series.dropna():
+#                 for item in sublist:
+#                     if item not in unique_items:
+#                         unique_items.add(item)
+#                         result.append(item)
+#             return result  # Keep as a list
+#
+#         elif series.dtype == "object":
+#             seen = set()
+#             result = [
+#                 item
+#                 for sublist in series.dropna().astype(str)
+#                 for item in sublist.split("; ")
+#                 if not (item in seen or seen.add(item))
+#             ]
+#             return result  # Keep as list
+#
+#         else:
+#             seen = set()
+#             return [x for x in series.dropna() if not (x in seen or seen.add(x))]
+#
+#     # Convert timestamp to datetime and sort
+#     mongo_merge_df["metadata.timestamp"] = pd.to_datetime(
+#         mongo_merge_df["metadata.timestamp"]
+#     )
+#     mongo_merge_df = mongo_merge_df.sort_values("metadata.timestamp")
+#
+#     # Convert `id` column to string
+#     mongo_merge_df["id"] = mongo_merge_df["id"].astype(str)
+#     mongo_merge_df["metadata.timestamp"] = mongo_merge_df["metadata.timestamp"].astype(
+#         str
+#     )
+#
+#     # Define aggregation functions
+#     agg_funcs = {
+#         "retrievalCount": "sum",
+#         "id": concat_unique,
+#         "metadata.data.colors": concat_unique,
+#         "metadata.data.manaCost": concat_unique,
+#         "metadata.data.type": concat_unique,
+#         "metadata.data.subtypes": concat_unique,
+#         "metadata.data.text": concat_unique,
+#         "metadata.data.flavorText": concat_unique,
+#         "metadata.data.power": concat_unique,
+#         "metadata.data.toughness": concat_unique,
+#         "metadata.timestamp": concat_unique,
+#         "metadata.chatId": concat_unique,
+#         "metadata.userId": concat_unique,
+#         "metadata.botId": concat_unique,
+#         "metadata.relatedCards": concat_unique,
+#         "metadata.relatedLore": concat_unique,
+#     }
+#
+#     # Group by 'metadata.data.name' and aggregate
+#     mongo_agg_df = mongo_merge_df.groupby("metadata.data.name", sort=False).agg(
+#         agg_funcs
+#     )
+#
+#     # Reset index if needed
+#     mongo_agg_df = mongo_agg_df.reset_index()
+#
+#     return mongo_agg_df
