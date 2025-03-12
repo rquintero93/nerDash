@@ -6,8 +6,8 @@
 import pandas as pd
 import streamlit as st
 
+from controllers.utils import clean_colors, count_colors, count_concept
 from models.mongo import get_mongo_cards
-from utils.utils import clean_colors, count_colors, count_concept
 from views.graphs import make_bar_chart, make_pie_chart
 
 

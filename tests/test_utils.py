@@ -1,12 +1,12 @@
 '''
-Test the functions in utils.utils.py.
+Test the functions in controllers.utils.py.
 
 '''
 
 import pandas as pd
 
-from utils.utils import (clean_colors, clean_mana_cost, clean_timestamp,
-                         count_colors, count_concept)
+from controllers.utils import (clean_colors, clean_mana_cost, clean_timestamp,
+                               count_colors, count_concept)
 
 
 def test_count_colors():

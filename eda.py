@@ -1,8 +1,8 @@
 import pandas as pd
 
+from controllers.utils import clean_colors, clean_timestamp
 # from chromadb import get_chroma
 from models.mongo import get_mongo_cards
-from utils.utils import clean_colors, clean_timestamp
 from views.graphs import make_bar_chart, make_pie_chart
 
 pd.set_option("display.max_columns", None)
