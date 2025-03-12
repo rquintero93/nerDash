@@ -12,8 +12,8 @@ dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 MONGO_URI = os.getenv("MONGO_URI")
 
-# Define a color map from MTG colors
-MTG_COLOR_MAP = {
+# Define color maps from MTG colors
+COLOR_TO_HEX_MAP = {
     "B": "#000000",  # Black
     "BGU": "#2E8B57",  # Sultai
     "BR": "#8B0000",  # Rakdos
@@ -40,3 +40,12 @@ MTG_COLOR_MAP = {
     "GUW": "#90EE90",  # Bant (was WUG)
     "BGRUW": "#DAA520",  # Rainbow (was WUBRG)
 }
+
+COLOR_TO_LABEL_MAP = {
+    "White": "W", "Blue": "U", "Black": "B", "Red": "R", "Green": "G", "Colorless": "C",
+    "Azorius": "WU", "Orzhov": "WB", "Boros": "WR", "Selesnya": "WG", "Dimir": "UB",
+    "Izzet": "UR", "Rakdos": "BR", "Gruul": "RG", "Bant": "WUG", "Esper": "WUB",
+    "Grixis": "UBR", "Jund": "BRG", "Naya": "RGW", "Abzan": "WBG", "Jeskai": "URW",
+    "Sultai": "BGU", "Mardu": "BRW", "Temur": "RUG", "Rainbow": "WUBRG"
+}
+

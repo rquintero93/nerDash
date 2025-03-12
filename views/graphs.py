@@ -47,7 +47,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         x='count' if orientation == 'h' else bar_counts.columns[0],
         y=bar_counts.columns[0] if orientation == 'h' else 'count',
         color=bar_counts.columns[0],
-        color_discrete_map=constants.MTG_COLOR_MAP,
+        color_discrete_map=constants.COLOR_TO_HEX_MAP,
         orientation=orientation
     )
 
@@ -105,7 +105,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
     
     # Create the pie chart
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
-                 color_discrete_map=constants.MTG_COLOR_MAP)
+                 color_discrete_map=constants.COLOR_TO_HEX_MAP)
 
     fig.update_traces(textinfo='percent', textposition='inside', 
                       insidetextorientation='auto', showlegend=show_legend)

@@ -8,6 +8,7 @@ from collections import Counter
 
 import pandas as pd
 
+import utils.constants as constants
 from models.mongo import get_mongo_cards
 
 
@@ -65,6 +66,7 @@ def clean_timestamp(row : pd.Series) -> pd.Timestamp:
 
     return cleaned_ts
 
+
 def sort_strings(strings:list) -> list:
     '''
     Sort a list of strings and remove duplicates.
@@ -78,6 +80,7 @@ def sort_strings(strings:list) -> list:
     strings = [s for s in strings if s is not None]
 
     return sorted(list(set(strings)))
+
 
 def clean_colors(row: pd.Series) -> list:
     '''
@@ -97,79 +100,27 @@ def clean_colors(row: pd.Series) -> list:
 
     for color in row:
         color = str(color).title().strip()
-        if color is None or len(color) == 0:
+        if not color:
             normalized_colors.append("Colorless")
-            continue
         else:
-            if color == "White":
-                normalized_colors.append("W")
-            elif color == "Blue":
-                normalized_colors.append("U")
-            elif color == "Black":
-                normalized_colors.append("B")
-            elif color == "Red":
-                normalized_colors.append("R")
-            elif color == "Green":
-                normalized_colors.append("G")
-            elif color == "Colorless":
-                normalized_colors.append("C")
-            elif color == "Azorius":
-                normalized_colors.append("WU")
-            elif color == "Orzhov":
-                normalized_colors.append("WB")
-            elif color == "Boros":
-                normalized_colors.append("WR")
-            elif color == "Selesnya":
-                normalized_colors.append("WG")
-            elif color == "Dimir":
-                normalized_colors.append("UB")
-            elif color == "Izzet":
-                normalized_colors.append("UR")
-            elif color == "Rakdos":
-                normalized_colors.append("BR")
-            elif color == "Gruul":
-                normalized_colors.append("RG")
-            elif color == "Bant":
-                normalized_colors.append("WUG")
-            elif color == "Esper":
-                normalized_colors.append("WUB")
-            elif color == "Grixis":
-                normalized_colors.append("UBR")
-            elif color == "Jund":
-                normalized_colors.append("BRG")
-            elif color == "Naya":
-                normalized_colors.append("RGW")
-            elif color == "Abzan":
-                normalized_colors.append("WBG")
-            elif color == "Jeskai":
-                normalized_colors.append("URW")
-            elif color == "Sultai":
-                normalized_colors.append("BGU")
-            elif color == "Mardu":
-                normalized_colors.append("BRW")
-            elif color == "Temur":
-                normalized_colors.append("RUG")
-            elif color == "Rainbow":
-                normalized_colors.append("WUBRG")
-            else:
-                if len(color) == 1:
-                    normalized_colors.append(color)
-                else:
-                    normalized_colors.append("Colorless")
-
+            normalized_colors.append(constants.COLOR_TO_LABEL_MAP.get(color, color if len(color) == 1 else "Colorless"))
 
     return sort_strings(normalized_colors)
 
+
 def get_cards_df() -> pd.DataFrame:
+    '''
+    Builds the dataframe for viewing in dashboard. Merges all relevant collections.
+    '''
 
     ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
     nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
-
 
     df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
 
     return df_cards
+
 
 def clean_mana_cost(row : pd.Series) -> set:
     '''
