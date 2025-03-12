@@ -13,14 +13,14 @@ import plotly.express as px
 import utils.constants as constants
 
 
-def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: Optional[str]=None) -> px.bar:
+def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
     '''
     Creates a plotly bar chart with some default settings.
 
     Args:
         data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
         orientation (Optional[str]): The orientation of the bar chart. Defaults to vertical, pass 'h' for horizontal.
-        column (Optional[str]): The column to plot from the DataFrame.
+        column (str): The column to plot from the DataFrame.
     '''
 
     #input validation
@@ -72,7 +72,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     return fig
 
 
-def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Optional[str]=None) -> px.pie:
+def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: str=None) -> px.pie:
 
     '''
     Creates a plotly pie chart with some default settings.
@@ -80,7 +80,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: Op
     Args:
         data (pd.DataFrame): The data to plot.
         column (str): The column to plot from the DataFrame.
-        show_legend (Optional[str]): Whether to show the legend. Defaults to True.
+        show_legend (str): Whether to show the legend. Defaults to True.
     '''
 
     #input validation

@@ -16,6 +16,7 @@ def get_mongo_client(connection_url:str) -> MongoClient:
     Args:
         connection_url (str): MongoDB connection URI. defined in .env in constants module
     """
+
     try:
         client = MongoClient(connection_url)
         print("MongoDB connected successfully!")
