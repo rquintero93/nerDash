@@ -28,7 +28,7 @@ def main():
     unique_users = df_cards['from'].nunique()
     unique_chats = df_cards['chatId'].nunique()
 
-    # st.header("Network KPIs")
+    # display KPIs in columns
     col1, col2, col3, col4 = st.columns(4)
     col1.metric(label="Total Cards", value=total_count)
     col2.metric(label="Total Retrievals", value=total_retrieval_count)

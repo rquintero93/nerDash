@@ -1,3 +1,8 @@
+'''
+Tests for the views.graphs module.
+
+'''
+
 import pandas as pd
 import pytest
 

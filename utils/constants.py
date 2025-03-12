@@ -12,7 +12,7 @@ dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 MONGO_URI = os.getenv("MONGO_URI")
 
-# Define a color map for MTG colors
+# Define a color map from MTG colors
 MTG_COLOR_MAP = {
     "B": "#000000",  # Black
     "BGU": "#2E8B57",  # Sultai
