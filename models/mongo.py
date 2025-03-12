@@ -10,7 +10,6 @@ from pymongo import MongoClient
 
 import models.queries as queries
 
-# MongoDB Connection Details
 dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 MONGO_URI = os.getenv("MONGO_URI")
@@ -44,24 +43,15 @@ def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
     if target_collection == "kengrams":
         pipeline = queries.kengrams
 
-        cursor = collection.aggregate(pipeline)
-        df = pd.DataFrame(list(cursor))
-
-        client.close()
-
-        if "anchorChange" in df.columns and "metadata" in df.columns:
-            df = df.drop(columns=["anchorChange", "metadata"])
-
-        return df
     else:
-        
-        pipeline = [
-        {"$match": {}},
-        ]
+        pipeline = queries.default
 
-        cursor = collection.aggregate(pipeline)
-        df = pd.DataFrame(list(cursor))
+    cursor = collection.aggregate(pipeline)
+    df = pd.DataFrame(list(cursor))
 
-        client.close()
+    client.close()
 
-        return df
+    if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
+        df = df.drop(columns=["anchorChange", "metadata"])
+
+    return df

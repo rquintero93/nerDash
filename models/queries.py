@@ -3,6 +3,11 @@ MongoDB queries for the ETL process.
 
 '''
 
+default = [
+{"$match": {}},
+]
+
+
 kengrams = [
     {
         "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
@@ -26,3 +31,5 @@ kengrams = [
         }
     }
 ]
+
+
