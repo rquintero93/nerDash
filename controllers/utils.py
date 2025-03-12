@@ -8,6 +8,8 @@ from collections import Counter
 
 import pandas as pd
 
+from models.mongo import get_mongo_cards
+
 
 def count_colors(data : pd.DataFrame,concept : str) -> dict:
     '''
@@ -157,6 +159,17 @@ def clean_colors(row: pd.Series) -> list:
 
 
     return sort_strings(normalized_colors)
+
+def get_cards_df() -> pd.DataFrame:
+
+    ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
+    nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
+
+
+    df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
+    df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
+
+    return df_cards
 
 def clean_mana_cost(row : pd.Series) -> set:
     '''

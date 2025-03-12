@@ -3,11 +3,9 @@
 
 """
 
-import pandas as pd
 import streamlit as st
 
-from controllers.utils import clean_colors, count_colors, count_concept
-from models.mongo import get_mongo_cards
+from controllers.utils import count_colors, count_concept, get_cards_df
 from views.graphs import make_bar_chart, make_pie_chart
 
 
@@ -17,10 +15,7 @@ def main():
 
     # Load data
     st.header("Loading data...")
-    ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
-    nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
-    df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
-    df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
+    df_cards = get_cards_df()
 
     # Calculate KPIs
     total_retrieval_count = df_cards['retrievalCount'].sum()
