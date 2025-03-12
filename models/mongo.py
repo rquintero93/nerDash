@@ -8,6 +8,8 @@ import pandas as pd
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+import models.queries as queries
+
 # MongoDB Connection Details
 dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
@@ -40,29 +42,7 @@ def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
     collection = client[db][target_collection]
 
     if target_collection == "kengrams":
-        pipeline = [
-            {
-                "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
-            },  # Ensure "anchorChange" field exists
-            {"$unwind": "$anchorChange"},  # Flatten the "anchorChange" array
-            {
-                "$replaceRoot": {
-                    "newRoot": {
-                        "$mergeObjects": ["$$ROOT", "$anchorChange"]
-                    }
-                }
-            },
-            {
-                "$unwind": "$metadata"  # Flatten the "metadata" array
-            },
-            {
-                "$replaceRoot": {
-                    "newRoot": {
-                        "$mergeObjects": ["$$ROOT", "$metadata"]
-                    }
-                }
-            }
-        ]
+        pipeline = queries.kengrams
 
         cursor = collection.aggregate(pipeline)
         df = pd.DataFrame(list(cursor))
