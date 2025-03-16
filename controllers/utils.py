@@ -167,6 +167,25 @@ def sort_strings(strings:list) -> list:
     return sorted(list(set(strings)))
 
 
+def is_row_valid(row: pd.Series) -> bool:
+    '''
+    Check if a row is valid.
+
+    Args:
+        row (pd.Series): The row to check.
+
+    Returns:
+    bool: True if the row is valid, False otherwise.
+    '''
+    if row is None:
+        return False
+    if len(row) == 0:
+        return False
+
+    else:
+        return True
+
+
 def clean_colors(row: pd.Series) -> list:
     '''
     Normalize the colors in a row to MTG defaults.
@@ -179,13 +198,11 @@ def clean_colors(row: pd.Series) -> list:
     '''
 
     #input validation
-    if row is None:
-        return None
-    normalized_colors = []
-    row = row if isinstance(row, list) else [row]
-    if len(row) == 0:
+    if not is_row_valid(row):
         return None
 
+    row = row if isinstance(row, list) else [row]
+    normalized_colors = []
     for color in row:
         color = str(color).title().strip()
         if not color:
@@ -225,13 +242,11 @@ def clean_mana_cost(row : pd.Series) -> set:
     '''
 
     #input validation
-    if row is None:
-        return None
-    normalized_mana_cost = []
-    row = row if isinstance(row, list) else [row]
-    if len(row) == 0:
+    if not is_row_valid(row):
         return None
 
+    row = row if isinstance(row, list) else [row]
+    normalized_mana_cost = []
     for mana_cost in row:
         mana = mana_cost.upper().replace("{", "").replace("}", "").replace("/", "")
         normalized_mana_cost.append(mana)
