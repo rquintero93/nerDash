@@ -13,6 +13,7 @@ class MongoDBClient:
     """
     Singleton MongoDB Client to manage the connection.
     """
+
     _instance = None
 
     def __new__(cls, connection_url: str):
@@ -49,6 +50,7 @@ def get_database(db_name: str) -> MongoClient:
     Returns:
         Database: MongoDB database instance.
     """
+
     client = MongoDBClient(constants.MONGO_URI).get_client()
     return client[db_name]
 
@@ -64,6 +66,7 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing the queried data.
     """
+
     collection = get_database(db)[target_collection]
     
     if target_collection == "kengrams":

@@ -49,3 +49,7 @@ COLOR_TO_LABEL_MAP = {
     "Sultai": "BGU", "Mardu": "BRW", "Temur": "RUG", "Rainbow": "WUBRG"
 }
 
+ERROR_MESSAGE_DATA_NONE = "Data cannot be None."
+ERROR_MESSAGE_DATA_NOT_DF = "Data must be a pandas DataFrame."
+ERROR_MESSAGE_DATA_NOT_DF_OR_DICT = "Data must be a pandas DataFrame or a dictionary that can be converted to one."
+ERROR_MESSAGE_COLUMN_NOT_IN_DF = "column argument is not in the DataFrame data."

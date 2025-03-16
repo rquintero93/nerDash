@@ -29,16 +29,13 @@ def is_valid_pie_chart_data(data: pd.DataFrame = None, column: str= None, show_l
     '''
 
     if data is None:
-        error_code = "Data cannot be None."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_DATA_NONE)
 
     if not isinstance(data, pd.DataFrame):
-        error_code = "Data must be a pandas DataFrame."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_DATA_NOT_DF)
 
     if isinstance(data, pd.DataFrame) and column not in data.columns:
-        error_code = "column argument is not in the DataFrame data."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF)
     
     else:
         return (True, None)
@@ -69,16 +66,13 @@ def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str
     '''
 
     if data is None:
-        error_code = "Data cannot be None."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_DATA_NONE)
 
     if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
-        error_code = "Data must be a pandas DataFrame or a dictionary that can be converted to one."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_DATA_NOT_DF_OR_DICT)
 
     if isinstance(data, pd.DataFrame) and column not in data.columns:
-        error_code = "column argument is not in the DataFrame data."
-        return (False, error_code)
+        return (False, constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF)
     
     else:
         return (True, None)

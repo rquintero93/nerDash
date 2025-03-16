@@ -6,14 +6,15 @@ Tests for the views.graphs module.
 import pandas as pd
 import pytest
 
+from utils import constants
 from views.graphs import make_bar_chart, make_pie_chart
 
 
 def test_make_bar_chart():
-    with pytest.raises(ValueError, match="Data cannot be None."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NONE):
         make_bar_chart()
 
-    with pytest.raises(ValueError, match="Data must be a pandas DataFrame or a dictionary that can be converted to one."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NOT_DF_OR_DICT):
         make_bar_chart(data=1)
     
     # Test with valid DataFrame and column
@@ -29,19 +30,19 @@ def test_make_bar_chart():
     #Test wtih invalid DataFrame column argument
     df = pd.DataFrame({'invalid': ['A', 'B', 'A', 'C'], 'value': [1, 2, 3, 4]})
 
-    with pytest.raises(ValueError, match="column argument is not in the DataFrame data."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF):
         make_bar_chart(data=df, column='category')
 
     assert fig is not None
 
 def test_make_pie_chart():
-    with pytest.raises(ValueError, match="Data cannot be None."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NONE):
         make_pie_chart()
 
-    with pytest.raises(ValueError, match="Data must be a pandas DataFrame."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NOT_DF):
         make_pie_chart(data=1, column='category')
 
-    with pytest.raises(ValueError, match="column argument is not in the DataFrame data."):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF):
         make_pie_chart(data=pd.DataFrame(), column=1)
     
     # Test with valid DataFrame
