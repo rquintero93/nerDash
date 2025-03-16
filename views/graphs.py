@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 
 import utils.constants as constants
+from controllers.utils import get_bar_counts, is_valid_bar_chart_data
 
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
@@ -24,23 +25,11 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     '''
 
     #input validation
-    if data is None:
-        return None
+    is_valid, error_code = is_valid_bar_chart_data(data, column)
+    if not is_valid:
+        raise ValueError(error_code)
 
-    if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
-        raise ValueError("Data must be a pandas DataFrame or a dictionary that can be converted to one.")
-        
-    if isinstance(data, pd.DataFrame):
-        bar_counts = data[column].value_counts().reset_index()
-        bar_counts.columns = [column, 'count']
-
-    elif isinstance(data, dict):
-        bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
-        bar_counts = bar_counts.sort_values('count', ascending=False)
-
-    else:
-        raise ValueError("Unsupported data type for bar chart")
-
+    bar_counts = get_bar_counts(data,column)
     # Create the bar chart
     fig = px.bar(
         bar_counts,

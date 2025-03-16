@@ -5,12 +5,56 @@ Utility functions for processing data.
 
 
 from collections import Counter
+from typing import Union
 
 import pandas as pd
 
 import utils.constants as constants
 from models.mongo import get_mongo_cards
 
+
+def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> bool:
+    '''
+    Validate the data for a bar chart. adds error_code for invalid data.
+
+    Args:
+        data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
+        column (str): The column to plot from the DataFrame.
+    '''
+    if data is None:
+        error_code = "Data cannot be None."
+        return (False, error_code)
+
+    if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
+        error_code = "Data must be a pandas DataFrame or a dictionary that can be converted to one."
+        return (False, error_code)
+
+    if isinstance(data, pd.DataFrame) and column not in data.columns:
+        error_code = "column argument is not in the DataFrame data."
+        return (False, error_code)
+    
+    else:
+        return (True, None)
+
+def get_bar_counts(data: Union[pd.DataFrame, dict] = None,  column: str=None) -> pd.DataFrame:
+    '''
+    Prepares the data for a bar chart.
+
+    Args:
+    data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
+    column (str): The column to plot from the DataFrame.
+
+    '''
+
+    if isinstance(data, pd.DataFrame):
+        bar_counts = data[column].value_counts().reset_index()
+        bar_counts.columns = [column, 'count']
+
+    else:
+        bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
+        bar_counts = bar_counts.sort_values('count', ascending=False)
+
+    return bar_counts
 
 def count_colors(data : pd.DataFrame,concept : str) -> dict:
     '''

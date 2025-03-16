@@ -10,7 +10,9 @@ from views.graphs import make_bar_chart, make_pie_chart
 
 
 def test_make_bar_chart():
-    assert make_bar_chart() is None
+    with pytest.raises(ValueError, match="Data cannot be None."):
+        make_bar_chart()
+
     with pytest.raises(ValueError, match="Data must be a pandas DataFrame or a dictionary that can be converted to one."):
         make_bar_chart(data=1)
     
@@ -24,10 +26,20 @@ def test_make_bar_chart():
     fig = make_bar_chart(data=data_dict)
     assert fig is not None
 
+    #Test wtih invalid DataFrame
+    df = pd.DataFrame({'invalid': ['A', 'B', 'A', 'C'], 'value': [1, 2, 3, 4]})
+
+    with pytest.raises(ValueError, match="column argument is not in the DataFrame data."):
+        make_bar_chart(data=df, column='category')
+
+    assert fig is not None
+
 def test_make_pie_chart():
     assert make_pie_chart() is None
+
     with pytest.raises(ValueError, match="Data must be a pandas DataFrame."):
         make_pie_chart(data=1, column='category')
+
     with pytest.raises(ValueError, match="Column must be a string."):
         make_pie_chart(data=pd.DataFrame(), column=1)
     

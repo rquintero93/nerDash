@@ -52,6 +52,7 @@ def get_database(db_name: str) -> MongoClient:
     client = MongoDBClient(constants.MONGO_URI).get_client()
     return client[db_name]
 
+
 def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
