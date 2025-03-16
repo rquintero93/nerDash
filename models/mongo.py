@@ -9,47 +9,72 @@ import models.queries as queries
 import utils.constants as constants
 
 
-def get_mongo_client(connection_url:str) -> MongoClient:
+class MongoDBClient:
     """
-    Create and return a MongoDB client.
+    Singleton MongoDB Client to manage the connection.
+    """
+    _instance = None
+
+    def __new__(cls, connection_url: str):
+        if cls._instance is None:
+            try:
+                cls._instance = super(MongoDBClient, cls).__new__(cls)
+                cls._instance.client = MongoClient(connection_url)
+                print("MongoDB connected successfully!")
+            except Exception as e:
+                print(f"Error connecting to MongoDB: {e}")
+                raise
+        return cls._instance
+    
+    def get_client(self) -> MongoClient:
+        """
+        Return the MongoDB client instance.
+        """
+        return self.client
+
+    def close(self):
+        """
+        Close the MongoDB client connection.
+        """
+        self.client.close()
+
+
+def get_database(db_name: str) -> MongoClient:
+    """
+    Get a MongoDB database instance.
 
     Args:
-        connection_url (str): MongoDB connection URI. defined in .env in constants module
+        db_name (str): Name of the database.
+    
+    Returns:
+        Database: MongoDB database instance.
     """
+    client = MongoDBClient(constants.MONGO_URI).get_client()
+    return client[db_name]
 
-    try:
-        client = MongoClient(connection_url)
-        print("MongoDB connected successfully!")
-        return client
-    except Exception as e:
-        print(f"Error connecting to MongoDB: {e}")
-        raise
-
-
-def get_mongo_cards(db: str , target_collection: str) -> pd.DataFrame:
+def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
 
     Args: 
         db (str): The database name
         target_collection (str): The target collection to query
+    
+    Returns:
+        pd.DataFrame: DataFrame containing the queried data.
     """
-
-    client = get_mongo_client(constants.MONGO_URI)
-    collection = client[db][target_collection]
-
+    collection = get_database(db)[target_collection]
+    
     if target_collection == "kengrams":
         pipeline = queries.kengrams
-
     else:
         pipeline = queries.default
-
+    
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
-
-    client.close()
-
+    
     if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
         df = df.drop(columns=["anchorChange", "metadata"])
-
+    
     return df
+
