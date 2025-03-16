@@ -12,8 +12,7 @@ import plotly.express as px
 
 import utils.constants as constants
 from controllers.utils import (get_bar_counts, get_pie_counts,
-                               is_valid_bar_chart_data,
-                               is_valid_pie_chart_data)
+                               is_valid_chart_data)
 
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
@@ -30,7 +29,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     '''
 
     #input validation
-    is_valid, error_code = is_valid_bar_chart_data(data, column)
+    is_valid, error_code = is_valid_chart_data(data, column)
     if not is_valid:
         raise ValueError(error_code)
 
@@ -81,7 +80,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
     '''
 
     #input validation
-    is_valid, error_code = is_valid_pie_chart_data(data, column)
+    is_valid, error_code = is_valid_chart_data(data, column)
     if not is_valid:
         raise ValueError(error_code)
 

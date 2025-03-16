@@ -39,7 +39,7 @@ def test_make_pie_chart():
     with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NONE):
         make_pie_chart()
 
-    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NOT_DF):
+    with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_DATA_NOT_DF_OR_DICT):
         make_pie_chart(data=1, column='category')
 
     with pytest.raises(ValueError, match=constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF):

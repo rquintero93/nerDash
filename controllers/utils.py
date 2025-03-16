@@ -13,46 +13,7 @@ import utils.constants as constants
 from models.mongo import get_mongo_cards
 
 
-def is_valid_pie_chart_data(data: pd.DataFrame = None, column: str= None, show_legend: str=None) -> tuple[bool, str]:
-    '''
-    Validate the data for a pie chart. adds error_code for invalid data.
-
-    Args:
-        Args:
-            data (pd.DataFrame): The data to plot.
-            column (str): The column to plot from the DataFrame.
-            show_legend (str): Whether to show the legend. Defaults to True.
-
-    Returns:
-        (bool): True if the data is valid, False otherwise.
-        error_code (str): The error code if the data is invalid.
-    '''
-
-    if data is None:
-        return (False, constants.ERROR_MESSAGE_DATA_NONE)
-
-    if not isinstance(data, pd.DataFrame):
-        return (False, constants.ERROR_MESSAGE_DATA_NOT_DF)
-
-    if isinstance(data, pd.DataFrame) and column not in data.columns:
-        return (False, constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF)
-    
-    else:
-        return (True, None)
-
-def get_pie_counts(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
-    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
-    
-    pie_counts = data[column].value_counts().reset_index()
-    pie_counts.columns = [column, 'count']
-    
-    # Truncate legend labels
-    pie_counts[column] = pie_counts[column].str[:15]
-
-    return pie_counts
-
-
-def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> tuple[bool, str]:
+def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> tuple[bool, str]:
     '''
     Validate the data for a bar chart. adds error_code for invalid data.
 
@@ -77,6 +38,30 @@ def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str
     else:
         return (True, None)
 
+
+def get_pie_counts(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
+    '''
+    Prepares the data for a pie chart.
+
+    Args:
+        data (pd.DataFrame): The data to plot.
+        column (str): The column to plot from the DataFrame.
+
+    Returns:
+        pie_counts (pd.DataFrame): The data to plot.
+
+    '''
+    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
+    
+    pie_counts = data[column].value_counts().reset_index()
+    pie_counts.columns = [column, 'count']
+    
+    # Truncate legend labels
+    pie_counts[column] = pie_counts[column].str[:15]
+
+    return pie_counts
+
+
 def get_bar_counts(data: Union[pd.DataFrame, dict] = None,  column: str=None) -> pd.DataFrame:
     '''
     Prepares the data for a bar chart.
@@ -98,6 +83,7 @@ def get_bar_counts(data: Union[pd.DataFrame, dict] = None,  column: str=None) ->
         bar_counts = bar_counts.sort_values('count', ascending=False)
 
     return bar_counts
+
 
 def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
     '''
