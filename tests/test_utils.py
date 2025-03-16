@@ -6,7 +6,7 @@ Test the functions in controllers.utils.py.
 import pandas as pd
 
 from controllers.utils import (clean_colors, clean_mana_cost, clean_timestamp,
-                               count_concept, count_primary_colors,
+                               count_card_names, count_primary_colors,
                                get_cards_df)
 
 
@@ -15,9 +15,9 @@ def test_count_primary_colors():
     result = count_primary_colors(data, 'colors')
     assert result == {'Red': 2, 'Green': 1, 'Blue': 2}
 
-def test_count_concept():
+def test_count_card_names():
     data = pd.DataFrame({'concept': [['A', 'B'], ['A'], ['B', 'C']]})
-    result = count_concept(data, 'concept')
+    result = count_card_names(data, 'concept')
     assert result == {('A', 'B'): 1, ('A',): 1, ('B', 'C'): 1}
 
 def test_clean_timestamp():

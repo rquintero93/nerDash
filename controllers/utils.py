@@ -105,7 +105,7 @@ def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
     return dict(color_counter)
 
 
-def count_concept(df : pd.DataFrame, concept : str) -> dict:
+def count_card_names(df : pd.DataFrame, names : str) -> dict:
     '''
     Count the number of times each concept appears in the data.
 
@@ -117,16 +117,16 @@ def count_concept(df : pd.DataFrame, concept : str) -> dict:
         dict: A dictionary containing the count of each concept.
     '''
 
-    concept_counter = Counter()
-    for concept_value in df[concept]:
-        if concept_value:
+    name_counter = Counter()
+    for name in df[names]:
+        if name:
             # If it's a list, add each item as a single unit
-            if isinstance(concept_value, list):
-                concept_counter.update([tuple(concept_value)])  # Convert list to tuple to make it hashable
+            if isinstance(name, list):
+                name_counter.update([tuple(name)])  # Convert list to tuple to make it hashable
             else:
-                concept_counter.update([concept_value])  # Add the string as a single unit
+                name_counter.update([name])  # Add the string as a single unit
 
-    return dict(concept_counter)
+    return dict(name_counter)
 
 
 def clean_timestamp(row : pd.Series) -> pd.Timestamp:
