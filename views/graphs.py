@@ -11,7 +11,9 @@ import pandas as pd
 import plotly.express as px
 
 import utils.constants as constants
-from controllers.utils import get_bar_counts, is_valid_bar_chart_data
+from controllers.utils import (get_bar_counts, get_pie_counts,
+                               is_valid_bar_chart_data,
+                               is_valid_pie_chart_data)
 
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
@@ -22,6 +24,9 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
         orientation (Optional[str]): The orientation of the bar chart. Defaults to vertical, pass 'h' for horizontal.
         column (str): The column to plot from the DataFrame.
+    
+    Returns:
+        px.bar: A plotly bar chart.
     '''
 
     #input validation
@@ -30,6 +35,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         raise ValueError(error_code)
 
     bar_counts = get_bar_counts(data,column)
+
     # Create the bar chart
     fig = px.bar(
         bar_counts,
@@ -62,7 +68,6 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
 
 
 def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: str=None) -> px.pie:
-
     '''
     Creates a plotly pie chart with some default settings.
 
@@ -70,28 +75,18 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
         data (pd.DataFrame): The data to plot.
         column (str): The column to plot from the DataFrame.
         show_legend (str): Whether to show the legend. Defaults to True.
+
+    Returns:
+        px.pie: A plotly pie chart.
     '''
 
     #input validation
-    if data is None:
-        return None
+    is_valid, error_code = is_valid_pie_chart_data(data, column)
+    if not is_valid:
+        raise ValueError(error_code)
 
-    # Ensure it's a valid DataFrame
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("Data must be a pandas DataFrame.")
+    pie_counts = get_pie_counts(data,column)
 
-    if not isinstance(column, str):
-        raise ValueError("Column must be a string.")
-
-    #data processing
-    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
-    
-    pie_counts = data[column].value_counts().reset_index()
-    pie_counts.columns = [column, 'count']
-    
-    # Truncate legend labels before passing to Plotly
-    pie_counts[column] = pie_counts[column].str[:15]
-    
     # Create the pie chart
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
                  color_discrete_map=constants.COLOR_TO_HEX_MAP)

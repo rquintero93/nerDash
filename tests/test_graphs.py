@@ -16,7 +16,7 @@ def test_make_bar_chart():
     with pytest.raises(ValueError, match="Data must be a pandas DataFrame or a dictionary that can be converted to one."):
         make_bar_chart(data=1)
     
-    # Test with valid DataFrame
+    # Test with valid DataFrame and column
     df = pd.DataFrame({'category': ['A', 'B', 'A', 'C'], 'value': [1, 2, 3, 4]})
     fig = make_bar_chart(data=df, column='category')
     assert fig is not None
@@ -26,7 +26,7 @@ def test_make_bar_chart():
     fig = make_bar_chart(data=data_dict)
     assert fig is not None
 
-    #Test wtih invalid DataFrame
+    #Test wtih invalid DataFrame column argument
     df = pd.DataFrame({'invalid': ['A', 'B', 'A', 'C'], 'value': [1, 2, 3, 4]})
 
     with pytest.raises(ValueError, match="column argument is not in the DataFrame data."):
@@ -35,12 +35,13 @@ def test_make_bar_chart():
     assert fig is not None
 
 def test_make_pie_chart():
-    assert make_pie_chart() is None
+    with pytest.raises(ValueError, match="Data cannot be None."):
+        make_pie_chart()
 
     with pytest.raises(ValueError, match="Data must be a pandas DataFrame."):
         make_pie_chart(data=1, column='category')
 
-    with pytest.raises(ValueError, match="Column must be a string."):
+    with pytest.raises(ValueError, match="column argument is not in the DataFrame data."):
         make_pie_chart(data=pd.DataFrame(), column=1)
     
     # Test with valid DataFrame

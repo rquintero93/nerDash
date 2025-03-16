@@ -6,12 +6,13 @@ Test the functions in controllers.utils.py.
 import pandas as pd
 
 from controllers.utils import (clean_colors, clean_mana_cost, clean_timestamp,
-                               count_colors, count_concept, get_cards_df)
+                               count_concept, count_primary_colors,
+                               get_cards_df)
 
 
-def test_count_colors():
+def test_count_primary_colors():
     data = pd.DataFrame({'colors': [['Red', 'Green'], ['Blue'], ['Red', 'Blue']]})
-    result = count_colors(data, 'colors')
+    result = count_primary_colors(data, 'colors')
     assert result == {'Red': 2, 'Green': 1, 'Blue': 2}
 
 def test_count_concept():

@@ -13,14 +13,61 @@ import utils.constants as constants
 from models.mongo import get_mongo_cards
 
 
-def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> bool:
+def is_valid_pie_chart_data(data: pd.DataFrame = None, column: str= None, show_legend: str=None) -> tuple[bool, str]:
+    '''
+    Validate the data for a pie chart. adds error_code for invalid data.
+
+    Args:
+        Args:
+            data (pd.DataFrame): The data to plot.
+            column (str): The column to plot from the DataFrame.
+            show_legend (str): Whether to show the legend. Defaults to True.
+
+    Returns:
+        (bool): True if the data is valid, False otherwise.
+        error_code (str): The error code if the data is invalid.
+    '''
+
+    if data is None:
+        error_code = "Data cannot be None."
+        return (False, error_code)
+
+    if not isinstance(data, pd.DataFrame):
+        error_code = "Data must be a pandas DataFrame."
+        return (False, error_code)
+
+    if isinstance(data, pd.DataFrame) and column not in data.columns:
+        error_code = "column argument is not in the DataFrame data."
+        return (False, error_code)
+    
+    else:
+        return (True, None)
+
+def get_pie_counts(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
+    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
+    
+    pie_counts = data[column].value_counts().reset_index()
+    pie_counts.columns = [column, 'count']
+    
+    # Truncate legend labels
+    pie_counts[column] = pie_counts[column].str[:15]
+
+    return pie_counts
+
+
+def is_valid_bar_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> tuple[bool, str]:
     '''
     Validate the data for a bar chart. adds error_code for invalid data.
 
     Args:
         data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
         column (str): The column to plot from the DataFrame.
+
+    Returns:
+        (bool): True if the data is valid, False otherwise.
+        error_code (str): The error code if the data is invalid.
     '''
+
     if data is None:
         error_code = "Data cannot be None."
         return (False, error_code)
@@ -44,6 +91,8 @@ def get_bar_counts(data: Union[pd.DataFrame, dict] = None,  column: str=None) ->
     data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
     column (str): The column to plot from the DataFrame.
 
+    Returns:
+       bar_counts (pd.DataFrame): The data to plot.
     '''
 
     if isinstance(data, pd.DataFrame):
@@ -56,21 +105,24 @@ def get_bar_counts(data: Union[pd.DataFrame, dict] = None,  column: str=None) ->
 
     return bar_counts
 
-def count_colors(data : pd.DataFrame,concept : str) -> dict:
+def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
     '''
-    Count the number of times each color appears in the data.
+    Count the number of times each primary color appears in the data.
 
     Args:
         data (pd.DataFrame): The data to count colors from.
         concept (str): The column name containing the colors.
+
+    Returns:
+        dict: A dictionary containing the count of each color.
     '''
 
-    concept_counter = Counter()
+    color_counter = Counter()
     for concept in data[concept]:
         if concept:
-            concept_counter.update(concept)
+            color_counter.update(concept)
 
-    return dict(concept_counter)
+    return dict(color_counter)
 
 
 def count_concept(df : pd.DataFrame, concept : str) -> dict:
@@ -80,6 +132,9 @@ def count_concept(df : pd.DataFrame, concept : str) -> dict:
     Args:
         df (pd.DataFrame): The data to count concepts from.
         concept (str): The column name containing the concepts.
+
+    Returns:
+        dict: A dictionary containing the count of each concept.
     '''
 
     concept_counter = Counter()
@@ -100,6 +155,9 @@ def clean_timestamp(row : pd.Series) -> pd.Timestamp:
 
     Args:
         row (pd.Series): The row containing the timestamp.
+
+    Returns:
+        pd.Timestamp: The cleaned timestamp.
     '''
 
     try:
@@ -117,6 +175,9 @@ def sort_strings(strings:list) -> list:
 
     Args:
         strings (list): The list of strings to sort.
+
+    Returns:
+    list: The sorted list of strings.
     '''
 
     if strings is None:
@@ -132,6 +193,9 @@ def clean_colors(row: pd.Series) -> list:
 
     Args:
         row (pd.Series): The row containing the colors.
+
+    Returns:
+        list: The normalized colors.
     '''
 
     #input validation
@@ -155,6 +219,9 @@ def clean_colors(row: pd.Series) -> list:
 def get_cards_df() -> pd.DataFrame:
     '''
     Builds the dataframe for viewing in dashboard. Merges all relevant collections.
+
+    Returns:
+        df_cards (pd.DataFrame): The dataframe containing all the cards.
     '''
 
     ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
@@ -172,6 +239,9 @@ def clean_mana_cost(row : pd.Series) -> set:
 
     Args:
         row (pd.Series): The row containing the mana cost.
+
+    Returns:
+        set: The normalized mana cost.
     '''
 
     #input validation

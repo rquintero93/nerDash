@@ -5,7 +5,7 @@
 
 import streamlit as st
 
-from controllers.utils import count_colors, count_concept, get_cards_df
+from controllers.utils import count_primary_colors, count_concept, get_cards_df
 from views.graphs import make_bar_chart, make_pie_chart
 
 
@@ -47,7 +47,7 @@ def main():
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
     st.header("Primary Color Distribution")
-    color_counter = count_colors(data=df_cards,concept='colors')
+    color_counter = count_primary_colors(data=df_cards,concept='colors')
     color_counter_bar_chart = make_bar_chart(data=color_counter)
     st.plotly_chart(color_counter_bar_chart, use_container_width=True)
 
