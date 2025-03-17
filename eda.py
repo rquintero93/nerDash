@@ -1,3 +1,7 @@
+'''
+Nothing to see here, just some exploratory data analysis. not connected to the main project
+
+'''
 import pandas as pd
 
 from controllers.functions import clean_colors, clean_timestamp
