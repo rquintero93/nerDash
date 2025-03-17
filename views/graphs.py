@@ -11,8 +11,8 @@ import pandas as pd
 import plotly.express as px
 
 import utils.constants as constants
-from controllers.utils import (get_bar_counts, get_pie_counts,
-                               is_valid_chart_data)
+from controllers.functions import get_bar_df, get_pie_df
+from utils.functions import is_valid_chart_data
 
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
@@ -33,7 +33,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     if not is_valid:
         raise ValueError(error_code)
 
-    bar_counts = get_bar_counts(data,column)
+    bar_counts = get_bar_df(data,column)
 
     # Create the bar chart
     fig = px.bar(
@@ -84,7 +84,7 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
     if not is_valid:
         raise ValueError(error_code)
 
-    pie_counts = get_pie_counts(data,column)
+    pie_counts = get_pie_df(data,column)
 
     # Create the pie chart
     fig = px.pie(pie_counts, names=column, values='count', color=column, 

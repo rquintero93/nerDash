@@ -1,6 +1,6 @@
 import pandas as pd
 
-from controllers.utils import clean_colors, clean_timestamp
+from controllers.functions import clean_colors, clean_timestamp
 # from chromadb import get_chroma
 from models.mongo import get_mongo_cards
 from views.graphs import make_bar_chart, make_pie_chart
