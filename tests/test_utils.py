@@ -1,5 +1,5 @@
 '''
-Test the functions in controllers.utils.py.
+Test the functions in utils.functions.py.
 
 '''
 
@@ -17,6 +17,10 @@ def test_clean_colors():
     row = ['Red', 'Blue']
     result = clean_colors(row)
     assert result == ['R', 'U']
+
+    row = ['Red','Test']
+    result = clean_colors(row)
+    assert result == ['Colorless','R']
 
 def test_clean_mana_cost():
     row = ['{R}', '{G}', '{1}']

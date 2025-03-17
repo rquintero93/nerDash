@@ -20,7 +20,7 @@ def test_count_card_names():
     assert result == {('A', 'B'): 1, ('A',): 1, ('B', 'C'): 1}
 
 def test_get_cards_df(mocker):
-    mock_get_mongo_cards = mocker.patch('controllers.utils.get_mongo_cards')
+    mock_get_mongo_cards = mocker.patch('controllers.functions.get_mongo_cards')
     mock_get_mongo_cards.side_effect = [
         pd.DataFrame({'colors': [['Red'], ['Green']],
                       'retrievalCount': [1, 2],

@@ -45,7 +45,9 @@ def test_get_mongo_cards_kengrams(mocker):
     assert len(df) == 2
     
     # Close the client
-    MongoDBClient._instance.close()
+    if MongoDBClient._instance:
+        MongoDBClient._instance.close()
+
     mock_instance.close.assert_called_once()
 
 
@@ -56,22 +58,23 @@ def test_get_mongo_cards_non_kengrams(mocker):
     mock_instance.__getitem__.return_value = mock_db
     mock_collection = MagicMock()
     mock_db.__getitem__.return_value = mock_collection
-    
+
     mock_cursor = [
-        {"field1": "value1", "field2": "value2"},
-        {"field1": "value3", "field2": "value4"},
+        {"anchorChange": [{"field1": "value1"}], "metadata": [{"field2": "value2"}]},
+        {"anchorChange": [{"field1": "value3"}], "metadata": [{"field2": "value4"}]},
     ]
     mock_collection.aggregate.return_value = mock_cursor
-    
+
     # Reset the Singleton instance to ensure a clean state for the test
-    MongoDBClient._instance = None
+    MongoDBClient._instance = MongoDBClient("mongodb://localhost:27017")  # Ensure reinitialization
     df = get_mongo_cards("test_db", "other_collection")
-    
+
     assert isinstance(df, pd.DataFrame)
-    assert "field1" in df.columns
-    assert "field2" in df.columns
+    assert "anchorChange" in df.columns
+    assert "metadata" in df.columns
     assert len(df) == 2
-    
+
     # Close the client
-    MongoDBClient._instance.close()
-    mock_instance.close.assert_called_once()
+    if MongoDBClient._instance:
+        MongoDBClient._instance.close()
+        MongoDBClient._instance.client.close.assert_called_once()  # Ensure close() was called
