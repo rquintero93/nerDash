@@ -6,7 +6,7 @@ from typing import Union
 
 import pandas as pd
 
-import utils.constants as constants
+from utils import constants
 
 
 def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> tuple[bool, str]:

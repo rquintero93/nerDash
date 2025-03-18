@@ -5,7 +5,7 @@ Test the functions in utils.functions.py.
 
 import pandas as pd
 
-from utils.functions import clean_colors, clean_mana_cost, clean_timestamp
+from utils import clean_colors, clean_mana_cost, clean_timestamp
 
 
 def test_clean_timestamp():

@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import pandas as pd
 
-import utils.constants as constants
-from models.mongo import MongoDBClient, get_mongo_cards
+from models import MongoDBClient, get_mongo_cards
+from utils import constants
 
 
 def test_get_mongo_client(mocker):

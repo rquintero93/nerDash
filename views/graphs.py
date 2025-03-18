@@ -10,13 +10,12 @@ from typing import Optional, Union
 import pandas as pd
 import plotly.express as px
 
-import utils.constants as constants
-from controllers.functions import get_bar_df, get_pie_df
-from utils.functions import is_valid_chart_data
+from controllers import get_bar_df, get_pie_df
+from utils import constants, is_valid_chart_data, logger
 
 
-def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str]=None, column: str=None) -> px.bar:
-    '''
+def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
+    """
     Creates a plotly bar chart with some default settings.
 
     Args:
@@ -26,14 +25,17 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     
     Returns:
         px.bar: A plotly bar chart.
-    '''
+    """
 
-    #input validation
+    # Input validation
     is_valid, error_code = is_valid_chart_data(data, column)
     if not is_valid:
+        logger.error(f"Invalid chart data: {error_code}")
         raise ValueError(error_code)
 
-    bar_counts = get_bar_df(data,column)
+    logger.info(f"Generating bar chart | Column: {column}, Orientation: {orientation}")
+
+    bar_counts = get_bar_df(data, column)
 
     # Create the bar chart
     fig = px.bar(
@@ -46,14 +48,12 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     )
 
     fig.update_traces(marker_line_color='white', marker_line_width=2)
-    
+
     # Truncate legend labels
     for trace in fig.data:
         trace.name = trace.name[:15]
-    
-    layout_updates = {
-        "showlegend": True
-    }
+
+    layout_updates = {"showlegend": True}
 
     if orientation == 'h':
         layout_updates.update({
@@ -61,13 +61,14 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
             "margin": dict(l=200),
             "bargap": 0.15
         })
-    
+
     fig.update_layout(**layout_updates)
+    logger.info("Bar chart successfully created.")
     return fig
 
 
-def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: str=None) -> px.pie:
-    '''
+def make_pie_chart(data: pd.DataFrame = None, column: str = None, show_legend: str = None) -> px.pie:
+    """
     Creates a plotly pie chart with some default settings.
 
     Args:
@@ -77,14 +78,17 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
 
     Returns:
         px.pie: A plotly pie chart.
-    '''
+    """
 
-    #input validation
+    # Input validation
     is_valid, error_code = is_valid_chart_data(data, column)
     if not is_valid:
+        logger.error(f"Invalid pie chart data: {error_code}")
         raise ValueError(error_code)
 
-    pie_counts = get_pie_df(data,column)
+    logger.info(f"Generating pie chart | Column: {column}, Show legend: {show_legend}")
+
+    pie_counts = get_pie_df(data, column)
 
     # Create the pie chart
     fig = px.pie(pie_counts, names=column, values='count', color=column, 
@@ -92,7 +96,8 @@ def make_pie_chart(data: pd.DataFrame = None, column: str= None, show_legend: st
 
     fig.update_traces(textinfo='percent', textposition='inside', 
                       insidetextorientation='auto', showlegend=show_legend)
-    
+
+    logger.info("Pie chart successfully created.")
     return fig
 
 

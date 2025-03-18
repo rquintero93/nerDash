@@ -9,8 +9,8 @@ from typing import Union
 
 import pandas as pd
 
-from models.mongo import get_mongo_cards
-from utils.functions import clean_colors
+from models import get_mongo_cards
+from utils import clean_colors
 
 
 def get_cards_df() -> pd.DataFrame:

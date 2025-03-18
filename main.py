@@ -5,9 +5,8 @@
 
 import streamlit as st
 
-from controllers.functions import (count_card_names, count_primary_colors,
-                               get_cards_df)
-from views.graphs import make_bar_chart, make_pie_chart
+from controllers import count_card_names, count_primary_colors, get_cards_df
+from views import make_bar_chart, make_pie_chart
 
 
 def main():

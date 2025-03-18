@@ -1,0 +1,17 @@
+"""
+Initialization file for the views package.
+
+- Re-exports graphing functions for easier access.
+- Uses the centralized logger from utils.
+"""
+
+from utils import logger
+
+# Re-export graphing functions
+from .graphs import make_bar_chart, make_pie_chart
+
+__all__ = [
+    "make_bar_chart",
+    "make_pie_chart",
+    "logger",
+]

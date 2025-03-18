@@ -6,8 +6,8 @@ import pandas as pd
 import streamlit as st
 from pymongo import MongoClient
 
-import models.queries as queries
-import utils.constants as constants
+from models import queries
+from utils import constants, logger
 
 
 class MongoDBClient:
@@ -22,9 +22,9 @@ class MongoDBClient:
             try:
                 cls._instance = super(MongoDBClient, cls).__new__(cls)
                 cls._instance.client = MongoClient(connection_url)
-                print("MongoDB connected successfully!")
+                logger.info("MongoDB connected successfully!")
             except Exception as e:
-                print(f"Error connecting to MongoDB: {e}")
+                logger.error(f"Error connecting to MongoDB: {e}")
                 raise
         return cls._instance
     
@@ -39,6 +39,7 @@ class MongoDBClient:
         Close the MongoDB client connection.
         """
         self.client.close()
+        logger.info("MongoDB connection closed.")
 
 
 @st.cache_resource(ttl=3600, show_spinner=False)
@@ -54,6 +55,7 @@ def get_database(db_name: str) -> MongoClient:
     """
 
     client = MongoDBClient(constants.MONGO_URI).get_client()
+    logger.info(f"Accessing database: {db_name}")
     return client[db_name]
 
 
@@ -70,6 +72,8 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
         pd.DataFrame: DataFrame containing the queried data.
     """
 
+    logger.info(f"Fetching data from MongoDB | Database: {db}, Collection: {target_collection}")
+
     collection = get_database(db)[target_collection]
     
     if target_collection == "kengrams":
@@ -83,5 +87,7 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
         df = df.drop(columns=["anchorChange", "metadata"])
     
+    logger.info(f"Retrieved {len(df)} records from {target_collection}")
+
     return df
 

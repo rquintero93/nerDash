@@ -15,7 +15,7 @@ from .functions import (clean_colors, clean_mana_cost, clean_timestamp,
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
-logger.add("utils.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
+logger.add("all_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
 
 # Define what should be imported when using `from utils import *`
 __all__ = [
