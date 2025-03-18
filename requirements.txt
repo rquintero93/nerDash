@@ -22,6 +22,8 @@ gitdb==4.0.12
     # via gitpython
 gitpython==3.1.44
     # via streamlit
+greenlet==3.1.1
+    # via pynvim
 idna==3.10
     # via requests
 jinja2==3.1.5
@@ -32,12 +34,16 @@ jsonschema==4.23.0
     # via altair
 jsonschema-specifications==2024.10.1
     # via jsonschema
+loguru==0.7.3
+    # via nerdbot (pyproject.toml)
 markdown-it-py==3.0.0
     # via rich
 markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+msgpack==1.1.0
+    # via pynvim
 narwhals==1.23.0
     # via altair
 networkx==3.4.2
@@ -46,6 +52,7 @@ numpy==2.2.2
     # via
     #   pandas
     #   pydeck
+    #   scipy
     #   streamlit
 packaging==24.2
     # via
@@ -58,6 +65,8 @@ pandas==2.2.3
     #   streamlit
 pillow==11.1.0
     # via streamlit
+pip==25.0.1
+    # via nerdbot (pyproject.toml)
 plotly==5.24.1
     # via nerdbot (pyproject.toml)
 protobuf==4.25.6
@@ -69,6 +78,8 @@ pydeck==0.9.1
 pygments==2.19.1
     # via rich
 pymongo==4.10.1
+    # via nerdbot (pyproject.toml)
+pynvim==0.5.2
     # via nerdbot (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via pandas
@@ -88,16 +99,14 @@ rpds-py==0.22.3
     # via
     #   jsonschema
     #   referencing
+scipy==1.15.2
+    # via nerdbot (pyproject.toml)
 six==1.17.0
     # via python-dateutil
 smmap==5.0.2
     # via gitdb
 streamlit==1.41.1
     # via nerdbot (pyproject.toml)
-scipy==1.5.1
-    # via
-    #   nerdbot (pyproject.toml)
-    #   streamlit
 tenacity==9.0.0
     # via
     #   plotly
