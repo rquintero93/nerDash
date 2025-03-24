@@ -76,5 +76,5 @@ def test_get_mongo_cards_non_kengrams(mocker):
 
     # Close the client
     if MongoDBClient._instance:
-        MongoDBClient._instance.close()
+        # MongoDBClient._instance.close()
         MongoDBClient._instance.client.close.assert_called_once()  # Ensure close() was called
