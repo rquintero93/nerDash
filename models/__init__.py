@@ -5,8 +5,6 @@ Initialization file for the models package.
 - Uses the centralized logger from utils.
 """
 
-from utils import logger
-
 from . import queries
 from .mongo import MongoDBClient, get_database, get_mongo_cards
 
@@ -14,6 +12,5 @@ __all__ = [
     "get_database",
     "get_mongo_cards",
     "MongoDBClient",
-    "logger",
     "queries",
 ]

@@ -7,7 +7,6 @@ Initialization file for the controllers package.
 """
 
 from models.mongo import get_mongo_cards
-from utils import logger
 
 # Re-export controller functions
 from .functions import (count_card_names, count_primary_colors, get_bar_df,
@@ -20,5 +19,4 @@ __all__ = [
     "count_primary_colors",
     "count_card_names",
     "get_mongo_cards",
-    "logger",
 ]

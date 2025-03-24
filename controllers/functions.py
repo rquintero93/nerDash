@@ -8,10 +8,14 @@ from collections import Counter
 from typing import Union
 
 import pandas as pd
+from loguru import logger
 
 from models import get_mongo_cards
 from utils import clean_colors
 
+# Configure Loguru
+logger.remove()  # Remove default logger to customize settings
+logger.add("controllers/function_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
 
 def get_cards_df() -> pd.DataFrame:
     '''

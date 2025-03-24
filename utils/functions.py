@@ -5,9 +5,13 @@ Utility functions.
 from typing import Union
 
 import pandas as pd
+from loguru import logger
 
 from utils import constants
 
+# Configure Loguru
+logger.remove()  # Remove default logger to customize settings
+logger.add("utils/function_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
 
 def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = None) -> tuple[bool, str]:
     '''

@@ -4,11 +4,15 @@ Functions to explore MongoDB database.
 
 import pandas as pd
 import streamlit as st
+from loguru import logger
 from pymongo import MongoClient
 
 from models import queries
-from utils import constants, logger
+from utils import constants
 
+# Configure Loguru
+logger.remove()  # Remove default logger to customize settings
+logger.add("models/mongo_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
 
 class MongoDBClient:
     """

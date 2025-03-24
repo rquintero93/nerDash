@@ -9,10 +9,14 @@ from typing import Optional, Union
 # import networkx as nx
 import pandas as pd
 import plotly.express as px
+from loguru import logger
 
 from controllers import get_bar_df, get_pie_df
-from utils import constants, is_valid_chart_data, logger
+from utils import constants, is_valid_chart_data
 
+# Configure Loguru
+logger.remove()  # Remove default logger to customize settings
+logger.add("views/graph_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
     """
