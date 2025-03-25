@@ -36,15 +36,16 @@ def main():
         st.subheader("Cards Created Over Time")
         createdAt_timeline_chart = make_line_chart(data=df_cards, y='createdAt', x='_id')
         st.plotly_chart(createdAt_timeline_chart, use_container_width=True)
+
     with col6:
-        st.subheader("Types")
-        type_pie_chart = make_pie_chart(data=df_cards, column='type')
-        st.plotly_chart(type_pie_chart, use_container_width=True)
- 
-    with col7:
         st.subheader("Cards Updated Over Time")
         updatedAt_timeline_chart = make_line_chart(data=df_cards, y='updatedAt', x='_id')
         st.plotly_chart(updatedAt_timeline_chart, use_container_width=True)
+ 
+    with col7:
+        st.subheader("Types")
+        type_pie_chart = make_pie_chart(data=df_cards, column='type')
+        st.plotly_chart(type_pie_chart, use_container_width=True)
  
     st.header("Primary Color Distribution")
     color_counter = count_primary_colors(data=df_cards,concept='colors')

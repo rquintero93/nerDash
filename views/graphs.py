@@ -42,13 +42,17 @@ def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.lin
 )
 
     fig.update_layout(
-        template='plotly_dark',
-        xaxis_title=x.capitalize(),
-        yaxis_title=y.capitalize(),
-        hovermode='x unified',
-        margin=dict(l=40, r=40, t=60, b=40),
-        height=500
-    )
+            template='plotly_dark',
+            xaxis_title=x.capitalize(),
+            yaxis_title=y.capitalize(),
+            hovermode='x unified',
+            margin=dict(l=40, r=40, t=60, b=40),
+            height=500,
+            xaxis=dict(
+                rangeslider=dict(visible=True),
+                type='date'
+            )
+        )
 
     fig.update_traces(line=dict(width=2), marker=dict(size=6))
 
