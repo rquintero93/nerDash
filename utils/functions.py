@@ -32,7 +32,7 @@ def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column : str = N
     if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
         return (False, constants.ERROR_MESSAGE_DATA_NOT_DF_OR_DICT)
 
-    if isinstance(data, pd.DataFrame) and column not in data.columns:
+    if isinstance(data, pd.DataFrame) and (column is None or column not in data.columns):
         return (False, constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF)
     
     else:

@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from utils import constants
-from views import make_bar_chart, make_pie_chart
+from views import make_bar_chart, make_line_chart, make_pie_chart
 
 
 def test_make_bar_chart():
@@ -48,4 +48,10 @@ def test_make_pie_chart():
     # Test with valid DataFrame
     df = pd.DataFrame({'category': ['A', 'B', 'A', 'C']})
     fig = make_pie_chart(data=df, column='category')
+    assert fig is not None
+
+def test_make_line_chart():
+
+    df = pd.DataFrame({'count':[1,2], 'target':['2020-10-10','2021-01-01']} )
+    fig = make_line_chart(data=df, x='count', y='target')
     assert fig is not None

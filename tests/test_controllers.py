@@ -5,8 +5,15 @@ Test the functions in controllers.utils.py.
 
 import pandas as pd
 
-from controllers import count_card_names, count_primary_colors, get_cards_df
+from controllers import (count_card_names, count_primary_colors, get_cards_df,
+                         get_line_df)
 
+
+def test_get_line_df():
+    df = pd.DataFrame({'target':[1,2], 'value':['2020-10-10','2021-01-01']} )
+    data = get_line_df(data=df, x='target', y='value')
+    assert data is not None
+    
 
 def test_count_primary_colors():
     data = pd.DataFrame({'colors': [['Red', 'Green'], ['Blue'], ['Red', 'Blue']]})

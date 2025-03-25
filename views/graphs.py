@@ -3,7 +3,6 @@ Graphing functions for the AI Thought Network.
 
 """
 
-
 from typing import Optional, Union
 
 # import networkx as nx
@@ -11,12 +10,35 @@ import pandas as pd
 import plotly.express as px
 from loguru import logger
 
-from controllers import get_bar_df, get_pie_df
+from controllers import get_bar_df, get_line_df, get_pie_df
 from utils import constants, is_valid_chart_data
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
 logger.add("views/graph_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
+
+def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.line:
+    """
+    Creates a plotly line chart with some default settings.
+
+    Args:
+        data (pd.DataFrame): The data to plot. 
+        x (str): The column to plot on the x-axis. 
+        y (str): The column to plot on the y-axis.
+
+    Returns:
+        px.line: A plotly line chart.
+
+    """
+    #TODO: Add input validation
+
+    logger.info(f"Generating line chart | X: {x}, Y: {y}")
+
+    line_df = data[[x, y]]
+
+    line_counts = get_line_df(line_df, x, y)
+    fig = px.line(line_counts, x='count', y='target')
+    return fig
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
     """

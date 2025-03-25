@@ -6,9 +6,10 @@ Initialization file for the views package.
 """
 
 # Re-export graphing functions
-from .graphs import make_bar_chart, make_pie_chart
+from .graphs import make_bar_chart, make_line_chart, make_pie_chart
 
 __all__ = [
     "make_bar_chart",
     "make_pie_chart",
+    'make_line_chart'
 ]

@@ -58,6 +58,25 @@ def get_pie_df(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
 
     return pie_counts
 
+def get_line_df(data: pd.DataFrame = None, x: str = None, y:str = None) -> pd.DataFrame:
+    '''
+    Prepares the data for a line chart.
+
+    Args:
+    data (pd.DataFrame): The data to plot.
+    column (str): The column to plot from the DataFrame.
+
+    Returns:
+      line_counts (pd.DataFrame): The data to plot.
+    '''
+    
+    data[y] = pd.to_datetime(data[y], errors='coerce')
+    filtered = data.dropna(subset=[y])
+
+    line_counts = filtered.groupby(filtered[y].dt.date)[x].count().reset_index(name='count')
+
+
+    return line_counts
 
 def get_bar_df(data: Union[pd.DataFrame, dict] = None,  column: str=None) -> pd.DataFrame:
     '''

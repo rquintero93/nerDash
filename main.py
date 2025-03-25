@@ -6,7 +6,7 @@
 import streamlit as st
 
 from controllers import count_card_names, count_primary_colors, get_cards_df
-from views import make_bar_chart, make_pie_chart
+from views import make_bar_chart, make_line_chart, make_pie_chart
 
 
 def main():
@@ -31,11 +31,11 @@ def main():
     # col4.metric(label="Total Chats", value=unique_chats)
 
     # Generate and display the charts in columns
-    col5, col6, col7 = st.columns(3)
-    # with col5:
-    #     st.subheader("Bot IDs")
-    #     botid_pie_chart = make_pie_chart(data=df_cards, column='botId')
-    #     st.plotly_chart(botid_pie_chart, use_container_width=True)
+    col5, col6= st.columns(2)
+    with col5:
+        st.subheader("Cards Over Time")
+        timeline_chart = make_line_chart(data=df_cards, y='createdAt', x='id')
+        st.plotly_chart(timeline_chart, use_container_width=True)
     with col6:
         st.subheader("Types")
         type_pie_chart = make_pie_chart(data=df_cards, column='type')
