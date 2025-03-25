@@ -37,7 +37,7 @@ def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.lin
     line_df = data[[x, y]]
 
     line_counts = get_line_df(line_df, x, y)
-    fig = px.line(line_counts, x='count', y='target')
+    fig = px.line(line_counts, y='count', x=y)
     return fig
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:

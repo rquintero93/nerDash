@@ -34,7 +34,7 @@ def main():
     col5, col6= st.columns(2)
     with col5:
         st.subheader("Cards Over Time")
-        timeline_chart = make_line_chart(data=df_cards, y='createdAt', x='id')
+        timeline_chart = make_line_chart(data=df_cards, y='createdAt', x='_id')
         st.plotly_chart(timeline_chart, use_container_width=True)
     with col6:
         st.subheader("Types")
