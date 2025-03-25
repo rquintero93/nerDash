@@ -20,31 +20,31 @@ def main():
     # Calculate KPIs
     total_retrieval_count = df_cards['retrievalCount'].sum()
     total_count = df_cards['_id'].count()
-    unique_users = df_cards['from'].nunique()
-    unique_chats = df_cards['chatId'].nunique()
+    # unique_users = df_cards['from'].nunique()
+    # unique_chats = df_cards['chatId'].nunique()
 
     # display KPIs in columns
     col1, col2, col3, col4 = st.columns(4)
     col1.metric(label="Total Cards", value=total_count)
     col2.metric(label="Total Retrievals", value=total_retrieval_count)
-    col3.metric(label="Unique Users", value=unique_users)
-    col4.metric(label="Total Chats", value=unique_chats)
+    # col3.metric(label="Unique Users", value=unique_users)
+    # col4.metric(label="Total Chats", value=unique_chats)
 
     # Generate and display the charts in columns
     col5, col6, col7 = st.columns(3)
-    with col5:
-        st.subheader("Bot IDs")
-        botid_pie_chart = make_pie_chart(data=df_cards, column='botId')
-        st.plotly_chart(botid_pie_chart, use_container_width=True)
+    # with col5:
+    #     st.subheader("Bot IDs")
+    #     botid_pie_chart = make_pie_chart(data=df_cards, column='botId')
+    #     st.plotly_chart(botid_pie_chart, use_container_width=True)
     with col6:
         st.subheader("Types")
         type_pie_chart = make_pie_chart(data=df_cards, column='type')
         st.plotly_chart(type_pie_chart, use_container_width=True)
  
-    with col7:
-        st.subheader("Actions")
-        type_pie_chart = make_bar_chart(data=df_cards,column='action')
-        st.plotly_chart(type_pie_chart, use_container_width=True)
+    # with col7:
+    #     st.subheader("Actions")
+    #     type_pie_chart = make_bar_chart(data=df_cards,column='action')
+    #     st.plotly_chart(type_pie_chart, use_container_width=True)
  
     st.header("Primary Color Distribution")
     color_counter = count_primary_colors(data=df_cards,concept='colors')

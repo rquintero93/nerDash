@@ -88,7 +88,7 @@ def is_row_valid(row: pd.Series) -> bool:
     '''
     if row is None:
         return False
-    if len(row) == 0:
+    if len(str( row )) == 0:
         return False
 
     else:

@@ -88,8 +88,8 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
     
-    if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
-        df = df.drop(columns=["anchorChange", "metadata"])
+    # if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
+    #     df = df.drop(columns=["anchorChange", "metadata"])
     
     logger.info(f"Retrieved {len(df)} records from {target_collection}")
 

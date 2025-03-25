@@ -21,16 +21,12 @@ def test_count_card_names():
 def test_get_cards_df(mocker):
     mock_get_mongo_cards = mocker.patch('controllers.functions.get_mongo_cards')
     mock_get_mongo_cards.side_effect = [
-        pd.DataFrame({'colors': [['Red'], ['Green']],
-                      'retrievalCount': [1, 2],
-                      '_id': [1, 2],
-                      'from': ['user1', 'user2'],
-                      'chatId': ['chat1', 'chat2']}),
         pd.DataFrame({'colors': [['Blue'], ['Red']],
                       'retrievalCount': [3, 4],
                       '_id': [3, 4],
-                      'from': ['user3', 'user4'],
-                      'chatId': ['chat3', 'chat4']})
+                    'createdAt': ['1742853950470', '1742853950470'],
+                    'updatedAt': ['1742853950470', '1742853950470'],
+                      })
     ]
     df_cards = get_cards_df()
     assert not df_cards.empty

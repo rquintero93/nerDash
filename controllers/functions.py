@@ -11,7 +11,7 @@ import pandas as pd
 from loguru import logger
 
 from models import get_mongo_cards
-from utils import clean_colors
+from utils import clean_colors, clean_timestamp
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
@@ -31,6 +31,8 @@ def get_cards_df() -> pd.DataFrame:
     df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
     df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
 
+    df_cards['updatedAt'] = df_cards['updatedAt'].apply(lambda x: clean_timestamp(x))
+    df_cards['createdAt'] = df_cards['createdAt'].apply(lambda x: clean_timestamp(x))
     return df_cards
 
 

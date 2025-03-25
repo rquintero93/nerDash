@@ -7,29 +7,41 @@ default = [
 {"$match": {}},
 ]
 
-
 kengrams = [
-    {
-        "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
-    },  # Ensure "anchorChange" field exists
-    {"$unwind": "$anchorChange"},  # Flatten the "anchorChange" array
-    {
-        "$replaceRoot": {
-            "newRoot": {
-                "$mergeObjects": ["$$ROOT", "$anchorChange"]
-            }
-        }
-    },
-    {
-        "$unwind": "$metadata"  # Flatten the "metadata" array
-    },
-    {
-        "$replaceRoot": {
-            "newRoot": {
-                "$mergeObjects": ["$$ROOT", "$metadata"]
-            }
-        }
-    }
+{"$match": {}},
 ]
+
+
+# kengrams = [
+#     {
+#         "$match": {"anchorChange": {"$exists": True, "$not": {"$size": 0}}}
+#     },
+#     {
+#         "$unwind": {
+#             "path": "$anchorChange",
+#             "preserveNullAndEmptyArrays": True
+#         }
+#     },
+#     {
+#         "$replaceRoot": {
+#             "newRoot": {
+#                 "$mergeObjects": ["$$ROOT", "$anchorChange"]
+#             }
+#         }
+#     },
+#     {
+#         "$unwind": {
+#             "path": "$metadata",
+#             "preserveNullAndEmptyArrays": True
+#         }
+#     },
+#     {
+#         "$replaceRoot": {
+#             "newRoot": {
+#                 "$mergeObjects": ["$$ROOT", "$metadata"]
+#             }
+#         }
+#     }
+# ]
 
 
