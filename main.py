@@ -20,14 +20,14 @@ def main():
     # Calculate KPIs
     total_retrieval_count = df_cards['retrievalCount'].sum()
     total_count = df_cards['_id'].count()
-    # unique_users = df_cards['from'].nunique()
+    unique_concepts = df_cards['name'].nunique()
     # unique_chats = df_cards['chatId'].nunique()
 
     # display KPIs in columns
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     col1.metric(label="Total Cards", value=total_count)
     col2.metric(label="Total Retrievals", value=total_retrieval_count)
-    # col3.metric(label="Unique Users", value=unique_users)
+    col3.metric(label="Unique Concepts", value=unique_concepts)
     # col4.metric(label="Total Chats", value=unique_chats)
 
     # Generate and display the charts in columns
