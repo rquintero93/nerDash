@@ -37,7 +37,21 @@ def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.lin
     line_df = data[[x, y]]
 
     line_counts = get_line_df(line_df, x, y)
-    fig = px.line(line_counts, y='count', x=y)
+    fig = px.line(line_counts, y='count', x=y,
+            markers=True,
+)
+
+    fig.update_layout(
+        template='plotly_dark',
+        xaxis_title=x.capitalize(),
+        yaxis_title=y.capitalize(),
+        hovermode='x unified',
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
+    )
+
+    fig.update_traces(line=dict(width=2), marker=dict(size=6))
+
     return fig
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
