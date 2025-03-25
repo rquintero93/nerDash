@@ -73,7 +73,7 @@ def get_line_df(data: pd.DataFrame = None, x: str = None, y:str = None) -> pd.Da
     data[y] = pd.to_datetime(data[y], errors='coerce')
     filtered = data.dropna(subset=[y])
 
-    line_counts = filtered.groupby(filtered[y].dt.date)[x].count().reset_index(name='count')
+    line_counts = filtered.groupby(filtered[y].dt.date)[x].nunique().reset_index(name='count')
 
 
     return line_counts

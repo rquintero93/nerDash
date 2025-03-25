@@ -31,18 +31,18 @@ def main():
     # col4.metric(label="Total Chats", value=unique_chats)
 
     # Generate and display the charts in columns
-    col5, col6= st.columns(2)
+    col5, col6, col7= st.columns(3)
     with col5:
         st.subheader("Cards Created Over Time")
         createdAt_timeline_chart = make_line_chart(data=df_cards, y='createdAt', x='_id')
         st.plotly_chart(createdAt_timeline_chart, use_container_width=True)
 
-    # with col6:
-    #     st.subheader("Cards Updated Over Time")
-    #     updatedAt_timeline_chart = make_line_chart(data=df_cards, y='updatedAt', x='_id')
-    #     st.plotly_chart(updatedAt_timeline_chart, use_container_width=True)
- 
     with col6:
+        st.subheader("Concepts Over Time")
+        updatedAt_timeline_chart = make_line_chart(data=df_cards, y='updatedAt', x='name')
+        st.plotly_chart(updatedAt_timeline_chart, use_container_width=True)
+ 
+    with col7:
         st.subheader("Types")
         type_pie_chart = make_pie_chart(data=df_cards, column='type')
         st.plotly_chart(type_pie_chart, use_container_width=True)
