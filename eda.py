@@ -16,12 +16,6 @@ nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
 df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
 
 df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
-# botid_pie_chart = make_pie_chart(df_ragdb_gs_cards,'botId')
-#
-# botid_pie_chart.show()
-
-# color_counter = count_colors(df_cards)
-# print(color_counter)
 
 df_cards['updatedAt'] = df_cards['updatedAt'].apply(lambda x: clean_timestamp(x))
 df_cards['createdAt'] = df_cards['createdAt'].apply(lambda x: clean_timestamp(x))

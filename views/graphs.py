@@ -5,7 +5,8 @@ Graphing functions for the AI Thought Network.
 
 from typing import Optional, Union
 
-# import networkx as nx
+import matplotlib as plt
+import networkx as nx
 import pandas as pd
 import plotly.express as px
 from loguru import logger
@@ -62,6 +63,122 @@ def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.lin
         marker=dict(size=6, color='limegreen')
     )
 
+    return fig
+
+def visulize_topic_barchart(topic_model,top_n_topics=10):
+    fig = topic_model.visualize_barchart(top_n_topics=top_n_topics)
+    return fig
+
+def visualize_topic_heatmap(topic_model):
+    fig=topic_model.visualize_heatmap()
+    return fig
+
+def visualize_topic_hierarchy(topic_model):
+    fig = topic_model.visualize_hierarchy()
+    return fig
+
+def visualize_graph(G, concepts, output_file="similarity_graph.png"):
+    pos = nx.spring_layout(G, seed=42)
+    plt.figure(figsize=(10, 8))
+    nx.draw_networkx_nodes(G, pos, node_color="skyblue", node_size=500)
+    nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.7)
+    # labels = {i: concepts[i] for i in G.nodes()}
+    # nx.draw_networkx_labels(G, pos, labels, font_size=10)
+    plt.title("Concept Similarity Graph")
+    plt.axis("off")
+    plt.savefig(output_file)
+    plt.close()
+
+def visualize_tsne(reduced_embeddings,cluster_labels):
+    """
+    Performs t-SNE dimensionality reduction and returns a Plotly visualization.
+    
+    Args:
+        embeddings: The embeddings to reduce and visualize
+        cluster_labels: Labels for coloring the points by cluster
+        output_file: Deprecated. Kept for backwards compatibility.
+        
+    Returns:
+        plotly.graph_objects.Figure: A Plotly figure object showing the t-SNE visualization
+    """
+    
+    # Create plotly figure
+    fig = px.scatter(
+        x=reduced_embeddings[:, 0], 
+        y=reduced_embeddings[:, 1], 
+        color=cluster_labels,
+        title="t-SNE visualization of Embeddings by Cluster"
+    )
+    
+    fig.update_layout(
+        template='plotly_dark',
+        xaxis_title="t-SNE Dimension 1",
+        yaxis_title="t-SNE Dimension 2",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=600,
+        width=800
+    )
+    
+    return fig
+
+def make_sentiment_over_time(df, sentiments, output_file=None):
+    """
+    Creates a Plotly line chart showing sentiment trends over time.
+    
+    Args:
+        df (pd.DataFrame): DataFrame containing the data with timestamps
+        sentiments (list): List of sentiment dictionaries with labels
+        output_file (str, optional): Deprecated. Kept for backwards compatibility.
+        
+    Returns:
+        plotly.graph_objects.Figure: A Plotly figure object showing sentiment over time
+    """
+    # If dataset has timestamps, aggregate sentiment scores over time
+    if "createdAt" not in df.columns:
+        print("No timestamp column available for temporal analysis.")
+        return None
+    
+    # Convert sentiment labels to a 5-point scale
+    sentiment_mapping = {
+        "Very Negative": -2,
+        "Negative": -1,
+        "Neutral": 0,
+        "Positive": 1,
+        "Very Positive": 2
+    }
+    
+    # Map each sentiment to our 5-point scale (defaulting to 0 for unknown labels)
+    df['sentiment_score'] = [sentiment_mapping.get(s["label"], 0) for s in sentiments]
+    
+    df.set_index("createdAt", inplace=True)
+    # Resample daily and take mean score
+    sentiment_series = df['sentiment_score'].resample("D").mean().reset_index()
+    
+    # Create plotly figure
+    
+    fig = px.line(sentiment_series, x='createdAt', y='sentiment_score',
+                  markers=True, 
+                  title="Average Sentiment Over Time")
+    
+    fig.update_layout(
+        template='plotly_dark',
+        xaxis_title="Time",
+        yaxis_title="Sentiment Score (-2: Very Negative to +2: Very Positive)",
+        hovermode='x unified',
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500,
+        xaxis=dict(
+            rangeslider=dict(visible=True),
+            type='date'
+        )
+    )
+    
+    # Add horizontal reference line at y=0
+    fig.add_shape(
+        type="line", line=dict(dash="dash", color="gray", width=1),
+        y0=0, y1=0, x0=0, x1=1, xref="paper"
+    )
+    
     return fig
 
 def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
