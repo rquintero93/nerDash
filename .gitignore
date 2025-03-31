@@ -19,3 +19,7 @@ wheels/
 *.log
 
 *.png
+
+
+uv.lock
+pyproyect.toml
