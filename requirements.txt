@@ -44,12 +44,8 @@ jsonschema-specifications==2024.10.1
     # via jsonschema
 loguru==0.7.3
     # via nerdbot (pyproject.toml)
-markdown-it-py==3.0.0
-    # via rich
 markupsafe==3.0.2
     # via jinja2
-mdurl==0.1.2
-    # via markdown-it-py
 msgpack==1.1.0
     # via pynvim
 narwhals==1.23.0
