@@ -79,7 +79,10 @@ def main():
     # 5. Visualize embeddings with t-SNE (with optional clustering)
     embeddings, st_model = compute_embeddings(descriptions)
 
-    df_cards['cluster']=cluster_concepts(descriptions, num_clusters=8)
+    staging=cluster_concepts(descriptions, num_clusters=8,len_df=df_cards.shape[0])
+    
+    df_cards = df_cards.head(staging.shape[0])
+    df_cards['cluster']= staging
 
     reduced_embeddings = reduce_embeddings_tsne(embeddings)
     tsne_graph = visualize_tsne(reduced_embeddings,df_cards['cluster'])
