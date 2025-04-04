@@ -26,3 +26,10 @@ dependencies = [
     "typing>=3.10.0.0",
     "watchdog>=6.0.0",
 ]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+reportMissingImports = "error"
+reportMissingTypeStubs = "information"
+reportArgumentType = "information"
+reportCallIssue = "information"
