@@ -3,6 +3,7 @@ Functions to explore MongoDB database.
 """
 
 import pandas as pd
+
 # import streamlit as st
 from loguru import logger
 from pymongo import MongoClient
@@ -12,7 +13,13 @@ from utils import constants
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
-logger.add("models/mongo_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
+logger.add(
+    "models/mongo_logs.log",
+    rotation="10MB",
+    level="INFO",
+    format="{time} {level} {message}",
+)
+
 
 class MongoDBClient:
     """
@@ -31,7 +38,7 @@ class MongoDBClient:
                 logger.error(f"Error connecting to MongoDB: {e}")
                 raise
         return cls._instance
-    
+
     def get_client(self) -> MongoClient:
         """
         Return the MongoDB client instance.
@@ -53,7 +60,7 @@ def get_database(db_name: str) -> MongoClient:
 
     Args:
         db_name (str): Name of the database.
-    
+
     Returns:
         Database: MongoDB database instance.
     """
@@ -68,30 +75,31 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
 
-    Args: 
+    Args:
         db (str): The database name
         target_collection (str): The target collection to query
-    
+
     Returns:
         pd.DataFrame: DataFrame containing the queried data.
     """
 
-    logger.info(f"Fetching data from MongoDB | Database: {db}, Collection: {target_collection}")
+    logger.info(
+        f"Fetching data from MongoDB | Database: {db}, Collection: {target_collection}"
+    )
 
     collection = get_database(db)[target_collection]
-    
+
     if target_collection == "kengrams":
         pipeline = queries.kengrams
     else:
         pipeline = queries.default
-    
+
     cursor = collection.aggregate(pipeline)
     df = pd.DataFrame(list(cursor))
-    
+
     # if target_collection == "kengrams" and "anchorChange" in df.columns and "metadata" in df.columns:
     #     df = df.drop(columns=["anchorChange", "metadata"])
-    
+
     logger.info(f"Retrieved {len(df)} records from {target_collection}")
 
     return df
-

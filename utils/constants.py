@@ -1,13 +1,13 @@
-'''
+"""
 Constants used in the project
 
-'''
+"""
 
 import os
 
 from dotenv import load_dotenv
 
-#Mognodb connection string
+# Mognodb connection string
 dotenv_path = os.path.expanduser("~/Documents/DeSciWorld/nerdBot/.env")
 load_dotenv(dotenv_path)
 MONGO_URI = os.getenv("MONGO_URI")
@@ -42,13 +42,35 @@ COLOR_TO_HEX_MAP = {
 }
 
 COLOR_TO_LABEL_MAP = {
-    "White": "W", "Blue": "U", "Black": "B", "Red": "R", "Green": "G", "Colorless": "C",
-    "Azorius": "WU", "Orzhov": "WB", "Boros": "WR", "Selesnya": "WG", "Dimir": "UB",
-    "Izzet": "UR", "Rakdos": "BR", "Gruul": "RG", "Bant": "WUG", "Esper": "WUB",
-    "Grixis": "UBR", "Jund": "BRG", "Naya": "RGW", "Abzan": "WBG", "Jeskai": "URW",
-    "Sultai": "BGU", "Mardu": "BRW", "Temur": "RUG", "Rainbow": "WUBRG"
+    "White": "W",
+    "Blue": "U",
+    "Black": "B",
+    "Red": "R",
+    "Green": "G",
+    "Colorless": "C",
+    "Azorius": "WU",
+    "Orzhov": "WB",
+    "Boros": "WR",
+    "Selesnya": "WG",
+    "Dimir": "UB",
+    "Izzet": "UR",
+    "Rakdos": "BR",
+    "Gruul": "RG",
+    "Bant": "WUG",
+    "Esper": "WUB",
+    "Grixis": "UBR",
+    "Jund": "BRG",
+    "Naya": "RGW",
+    "Abzan": "WBG",
+    "Jeskai": "URW",
+    "Sultai": "BGU",
+    "Mardu": "BRW",
+    "Temur": "RUG",
+    "Rainbow": "WUBRG",
 }
 
 ERROR_MESSAGE_DATA_NONE = "Data cannot be None."
-ERROR_MESSAGE_DATA_NOT_DF_OR_DICT = "Data must be a pandas DataFrame or a dictionary that can be converted to one."
+ERROR_MESSAGE_DATA_NOT_DF_OR_DICT = (
+    "Data must be a pandas DataFrame or a dictionary that can be converted to one."
+)
 ERROR_MESSAGE_COLUMN_NOT_IN_DF = "column argument is not in the DataFrame data."

@@ -3,7 +3,6 @@ Controller functions for processing data.
 
 """
 
-
 from collections import Counter
 from typing import Union
 
@@ -15,29 +14,35 @@ from utils import clean_colors, clean_timestamp
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
-logger.add("controllers/function_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
+logger.add(
+    "controllers/function_logs.log",
+    rotation="10MB",
+    level="INFO",
+    format="{time} {level} {message}",
+)
+
 
 def get_cards_df() -> pd.DataFrame:
-    '''
+    """
     Builds the dataframe for viewing in dashboard. Merges all relevant collections.
 
     Returns:
         df_cards (pd.DataFrame): The dataframe containing all the cards.
-    '''
+    """
 
     ragdb_cards = get_mongo_cards(db="ragDB", target_collection="kengrams")
-    nerdb_cards = get_mongo_cards(db="nerDB",target_collection="kengrams")
+    nerdb_cards = get_mongo_cards(db="nerDB", target_collection="kengrams")
 
     df_cards = pd.concat([ragdb_cards, nerdb_cards], ignore_index=True)
-    df_cards['colors'] = df_cards['colors'].apply(lambda x: clean_colors(x))
+    df_cards["colors"] = df_cards["colors"].apply(lambda x: clean_colors(x))
 
-    df_cards['updatedAt'] = df_cards['updatedAt'].apply(lambda x: clean_timestamp(x))
-    df_cards['createdAt'] = df_cards['createdAt'].apply(lambda x: clean_timestamp(x))
+    df_cards["updatedAt"] = df_cards["updatedAt"].apply(lambda x: clean_timestamp(x))
+    df_cards["createdAt"] = df_cards["createdAt"].apply(lambda x: clean_timestamp(x))
     return df_cards
 
 
 def get_pie_df(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
-    '''
+    """
     Prepares the data for a pie chart.
 
     Args:
@@ -47,19 +52,24 @@ def get_pie_df(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
     Returns:
         pie_counts (pd.DataFrame): The data to plot.
 
-    '''
-    data[column] = data[column].apply(lambda x: ''.join(sorted(x)) if isinstance(x, list) else x)
-    
+    """
+    data[column] = data[column].apply(
+        lambda x: "".join(sorted(x)) if isinstance(x, list) else x
+    )
+
     pie_counts = data[column].value_counts().reset_index()
-    pie_counts.columns = [column, 'count']
-    
+    pie_counts.columns = [column, "count"]
+
     # Truncate legend labels
     pie_counts[column] = pie_counts[column].str[:15]
 
     return pie_counts
 
-def get_line_df(data: pd.DataFrame = None, x: str = None, y:str = None) -> pd.DataFrame:
-    '''
+
+def get_line_df(
+    data: pd.DataFrame = None, x: str = None, y: str = None
+) -> pd.DataFrame:
+    """
     Prepares the data for a line chart.
 
     Args:
@@ -68,41 +78,46 @@ def get_line_df(data: pd.DataFrame = None, x: str = None, y:str = None) -> pd.Da
 
     Returns:
       line_counts (pd.DataFrame): The data to plot.
-    '''
-    
-    data[y] = pd.to_datetime(data[y], errors='coerce')
+    """
+
+    data[y] = pd.to_datetime(data[y], errors="coerce")
     filtered = data.dropna(subset=[y])
 
-    line_counts = filtered.groupby(filtered[y].dt.date)[x].nunique().reset_index(name='count')
-
+    line_counts = (
+        filtered.groupby(filtered[y].dt.date)[x].nunique().reset_index(name="count")
+    )
 
     return line_counts
 
-def get_bar_df(data: Union[pd.DataFrame, dict] = None,  column: str=None) -> pd.DataFrame:
-    '''
+
+def get_bar_df(
+    data: Union[pd.DataFrame, dict] = None, column: str = None
+) -> pd.DataFrame:
+    """
     Prepares the data for a bar chart.
 
     Args:
-    data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
+    data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame,
+    the column argument must be provided.
     column (str): The column to plot from the DataFrame.
 
     Returns:
        bar_counts (pd.DataFrame): The data to plot.
-    '''
+    """
 
     if isinstance(data, pd.DataFrame):
         bar_counts = data[column].value_counts().reset_index()
-        bar_counts.columns = [column, 'count']
+        bar_counts.columns = [column, "count"]
 
     else:
-        bar_counts = pd.DataFrame(list(data.items()), columns=['key', 'count'])
-        bar_counts = bar_counts.sort_values('count', ascending=False)
+        bar_counts = pd.DataFrame(list(data.items()), columns=["key", "count"])
+        bar_counts = bar_counts.sort_values("count", ascending=False)
 
     return bar_counts
 
 
-def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
-    '''
+def count_primary_colors(data: pd.DataFrame, concept: str) -> dict:
+    """
     Count the number of times each primary color appears in the data.
 
     Args:
@@ -111,7 +126,7 @@ def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
 
     Returns:
         dict: A dictionary containing the count of each color.
-    '''
+    """
 
     color_counter = Counter()
     for concept in data[concept]:
@@ -121,8 +136,8 @@ def count_primary_colors(data : pd.DataFrame,concept : str) -> dict:
     return dict(color_counter)
 
 
-def count_card_names(df : pd.DataFrame, names : str) -> dict:
-    '''
+def count_card_names(df: pd.DataFrame, names: str) -> dict:
+    """
     Count the number of times each concept appears in the data.
 
     Args:
@@ -131,14 +146,16 @@ def count_card_names(df : pd.DataFrame, names : str) -> dict:
 
     Returns:
         dict: A dictionary containing the count of each concept.
-    '''
+    """
 
     name_counter = Counter()
     for name in df[names]:
         if name:
             # If it's a list, add each item as a single unit
             if isinstance(name, list):
-                name_counter.update([tuple(name)])  # Convert list to tuple to make it hashable
+                name_counter.update(
+                    [tuple(name)]
+                )  # Convert list to tuple to make it hashable
             else:
                 name_counter.update([name])  # Add the string as a single unit
 

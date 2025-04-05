@@ -16,66 +16,76 @@ from utils import constants, is_valid_chart_data
 
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
-logger.add("views/graph_logs.log", rotation="10MB", level="INFO", format="{time} {level} {message}")
+logger.add(
+    "views/graph_logs.log",
+    rotation="10MB",
+    level="INFO",
+    format="{time} {level} {message}",
+)
 
-def make_line_chart(data: pd.DataFrame=None, x: str=None, y: str=None) -> px.line:
+
+def make_line_chart(data: pd.DataFrame = None, x: str = None, y: str = None) -> px.line:
     """
     Creates a plotly line chart with some default settings.
 
     Args:
-        data (pd.DataFrame): The data to plot. 
-        x (str): The column to plot on the x-axis. 
+        data (pd.DataFrame): The data to plot.
+        x (str): The column to plot on the x-axis.
         y (str): The column to plot on the y-axis.
 
     Returns:
         px.line: A plotly line chart.
 
     """
-    #TODO: Add input validation
+    # TODO: Add input validation
 
     logger.info(f"Generating line chart | X: {x}, Y: {y}")
 
     line_df = data[[x, y]]
 
     line_counts = get_line_df(line_df, x, y)
-    fig = px.line(line_counts, y='count', x=y,
-            markers=True,
-)
+    fig = px.line(
+        line_counts,
+        y="count",
+        x=y,
+        markers=True,
+    )
 
     fig.update_layout(
-            template='plotly_dark',
-            xaxis_title=y,
-            yaxis_title=x,
-            hovermode='x unified',
-            margin=dict(l=40, r=40, t=60, b=40),
-            height=500,
-            xaxis=dict(
-                rangeslider=dict(visible=True),
-                type='date'
-            )
-        )
+        template="plotly_dark",
+        xaxis_title=y,
+        yaxis_title=x,
+        hovermode="x unified",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500,
+        xaxis=dict(rangeslider=dict(visible=True), type="date"),
+    )
 
-    if y == 'createdAt':
+    if y == "createdAt":
         fig.update_traces(line=dict(width=2), marker=dict(size=6))
     else:
         fig.update_traces(
-        line=dict(width=2, color='limegreen'),
-        marker=dict(size=6, color='limegreen')
-    )
+            line=dict(width=2, color="limegreen"),
+            marker=dict(size=6, color="limegreen"),
+        )
 
     return fig
 
-def visulize_topic_barchart(topic_model,top_n_topics=10):
+
+def visulize_topic_barchart(topic_model, top_n_topics=10):
     fig = topic_model.visualize_barchart(top_n_topics=top_n_topics)
     return fig
 
+
 def visualize_topic_heatmap(topic_model):
-    fig=topic_model.visualize_heatmap()
+    fig = topic_model.visualize_heatmap()
     return fig
+
 
 def visualize_topic_hierarchy(topic_model):
     fig = topic_model.visualize_hierarchy()
     return fig
+
 
 def visualize_graph(G, concepts, output_file="similarity_graph.png"):
     pos = nx.spring_layout(G, seed=42)
@@ -89,47 +99,49 @@ def visualize_graph(G, concepts, output_file="similarity_graph.png"):
     plt.savefig(output_file)
     plt.close()
 
-def visualize_tsne(reduced_embeddings,cluster_labels):
+
+def visualize_tsne(reduced_embeddings, cluster_labels):
     """
     Performs t-SNE dimensionality reduction and returns a Plotly visualization.
-    
+
     Args:
         embeddings: The embeddings to reduce and visualize
         cluster_labels: Labels for coloring the points by cluster
         output_file: Deprecated. Kept for backwards compatibility.
-        
+
     Returns:
         plotly.graph_objects.Figure: A Plotly figure object showing the t-SNE visualization
     """
-    
+
     # Create plotly figure
     fig = px.scatter(
-        x=reduced_embeddings[:, 0], 
-        y=reduced_embeddings[:, 1], 
+        x=reduced_embeddings[:, 0],
+        y=reduced_embeddings[:, 1],
         color=cluster_labels,
-        title="t-SNE visualization of Embeddings by Cluster"
+        title="t-SNE visualization of Embeddings by Cluster",
     )
-    
+
     fig.update_layout(
-        template='plotly_dark',
+        template="plotly_dark",
         xaxis_title="t-SNE Dimension 1",
         yaxis_title="t-SNE Dimension 2",
         margin=dict(l=40, r=40, t=60, b=40),
         height=600,
-        width=800
+        width=800,
     )
-    
+
     return fig
+
 
 def make_sentiment_over_time(df, sentiments, output_file=None):
     """
     Creates a Plotly line chart showing sentiment trends over time.
-    
+
     Args:
         df (pd.DataFrame): DataFrame containing the data with timestamps
         sentiments (list): List of sentiment dictionaries with labels
         output_file (str, optional): Deprecated. Kept for backwards compatibility.
-        
+
     Returns:
         plotly.graph_objects.Figure: A Plotly figure object showing sentiment over time
     """
@@ -137,51 +149,62 @@ def make_sentiment_over_time(df, sentiments, output_file=None):
     if "createdAt" not in df.columns:
         print("No timestamp column available for temporal analysis.")
         return None
-    
+
     # Convert sentiment labels to a 5-point scale
     sentiment_mapping = {
         "Very Negative": -2,
         "Negative": -1,
         "Neutral": 0,
         "Positive": 1,
-        "Very Positive": 2
+        "Very Positive": 2,
     }
-    
+
     # Map each sentiment to our 5-point scale (defaulting to 0 for unknown labels)
-    df['sentiment_score'] = [sentiment_mapping.get(s["label"], 0) for s in sentiments]
-    
+    df["sentiment_score"] = [sentiment_mapping.get(s["label"], 0) for s in sentiments]
+
     df.set_index("createdAt", inplace=True)
     # Resample daily and take mean score
-    sentiment_series = df['sentiment_score'].resample("D").mean().reset_index()
-    
+    sentiment_series = df["sentiment_score"].resample("D").mean().reset_index()
+
     # Create plotly figure
-    
-    fig = px.line(sentiment_series, x='createdAt', y='sentiment_score',
-                  markers=True, 
-                  title="Average Sentiment Over Time")
-    
+
+    fig = px.line(
+        sentiment_series,
+        x="createdAt",
+        y="sentiment_score",
+        markers=True,
+        title="Average Sentiment Over Time",
+    )
+
     fig.update_layout(
-        template='plotly_dark',
+        template="plotly_dark",
         xaxis_title="Time",
         yaxis_title="Sentiment Score (-2: Very Negative to +2: Very Positive)",
-        hovermode='x unified',
+        hovermode="x unified",
         margin=dict(l=40, r=40, t=60, b=40),
         height=500,
-        xaxis=dict(
-            rangeslider=dict(visible=True),
-            type='date'
-        )
+        xaxis=dict(rangeslider=dict(visible=True), type="date"),
     )
-    
+
     # Add horizontal reference line at y=0
     fig.add_shape(
-        type="line", line=dict(dash="dash", color="gray", width=1),
-        y0=0, y1=0, x0=0, x1=1, xref="paper"
+        type="line",
+        line=dict(dash="dash", color="gray", width=1),
+        y0=0,
+        y1=0,
+        x0=0,
+        x1=1,
+        xref="paper",
     )
-    
+
     return fig
 
-def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional[str] = None, column: str = None) -> px.bar:
+
+def make_bar_chart(
+    data: Union[pd.DataFrame, dict] = None,
+    orientation: Optional[str] = None,
+    column: str = None,
+) -> px.bar:
     """
     Creates a plotly bar chart with some default settings.
 
@@ -189,7 +212,7 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
         data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
         orientation (Optional[str]): The orientation of the bar chart. Defaults to vertical, pass 'h' for horizontal.
         column (str): The column to plot from the DataFrame.
-    
+
     Returns:
         px.bar: A plotly bar chart.
     """
@@ -207,14 +230,14 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
     # Create the bar chart
     fig = px.bar(
         bar_counts,
-        x='count' if orientation == 'h' else bar_counts.columns[0],
-        y=bar_counts.columns[0] if orientation == 'h' else 'count',
+        x="count" if orientation == "h" else bar_counts.columns[0],
+        y=bar_counts.columns[0] if orientation == "h" else "count",
         color=bar_counts.columns[0],
         color_discrete_map=constants.COLOR_TO_HEX_MAP,
-        orientation=orientation
+        orientation=orientation,
     )
 
-    fig.update_traces(marker_line_color='white', marker_line_width=2)
+    fig.update_traces(marker_line_color="white", marker_line_width=2)
 
     # Truncate legend labels
     for trace in fig.data:
@@ -222,19 +245,19 @@ def make_bar_chart(data: Union[pd.DataFrame, dict] = None, orientation: Optional
 
     layout_updates = {"showlegend": True}
 
-    if orientation == 'h':
-        layout_updates.update({
-            "height": len(bar_counts) * 25,
-            "margin": dict(l=200),
-            "bargap": 0.15
-        })
+    if orientation == "h":
+        layout_updates.update(
+            {"height": len(bar_counts) * 25, "margin": dict(l=200), "bargap": 0.15}
+        )
 
     fig.update_layout(**layout_updates)
     logger.info("Bar chart successfully created.")
     return fig
 
 
-def make_pie_chart(data: pd.DataFrame = None, column: str = None, show_legend: str = None) -> px.pie:
+def make_pie_chart(
+    data: pd.DataFrame = None, column: str = None, show_legend: str = None
+) -> px.pie:
     """
     Creates a plotly pie chart with some default settings.
 
@@ -258,11 +281,20 @@ def make_pie_chart(data: pd.DataFrame = None, column: str = None, show_legend: s
     pie_counts = get_pie_df(data, column)
 
     # Create the pie chart
-    fig = px.pie(pie_counts, names=column, values='count', color=column, 
-                 color_discrete_map=constants.COLOR_TO_HEX_MAP)
+    fig = px.pie(
+        pie_counts,
+        names=column,
+        values="count",
+        color=column,
+        color_discrete_map=constants.COLOR_TO_HEX_MAP,
+    )
 
-    fig.update_traces(textinfo='percent', textposition='inside', 
-                      insidetextorientation='auto', showlegend=show_legend)
+    fig.update_traces(
+        textinfo="percent",
+        textposition="inside",
+        insidetextorientation="auto",
+        showlegend=show_legend,
+    )
 
     logger.info("Pie chart successfully created.")
     return fig

@@ -1,14 +1,14 @@
-'''
+"""
 MongoDB queries for the ETL process.
 
-'''
+"""
 
 default = [
-{"$match": {}},
+    {"$match": {}},
 ]
 
 kengrams = [
-{"$match": {}},
+    {"$match": {}},
 ]
 
 
@@ -43,5 +43,3 @@ kengrams = [
 #         }
 #     }
 # ]
-
-
