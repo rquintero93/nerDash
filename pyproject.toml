@@ -3,7 +3,7 @@ name = "nerdbot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "bertopic>=0.17.0",
     "clang>=20.1.0",
@@ -25,6 +25,12 @@ dependencies = [
     "transformers>=4.50.3",
     "typing>=3.10.0.0",
     "watchdog>=6.0.0",
+    "taskipy>=1.12.2",
+    "ruff>=0.4.0",
+    "pytest>=8.1.1",
+    "basedpyright>=1.10.5",
+    "visidata>=3.1.1",
+    "ipython>=9.1.0",
 ]
 
 [tool.basedpyright]
@@ -37,19 +43,44 @@ reportCallIssue = "information"
 
 [tool.ruff]
 fix = true
-line-length = 88
+line-length = 120
 exclude = ["*/.venv"]
-[tool.ruff.lint]
-select = [
-    "B", # Errors and bad practices (from flake8-bugbear).
-    # "D", # Docstrings, to check their presence and format.
-    "E",   # Style errors, alignment, and code conventions.
-    "F",   # Code errors (equivalent to flake8, detects critical issues).
-    "I",   # Imports (reordering, duplicates, and conventions).
-    "Q",   # Improper SQL queries (if applicable to your project).
-    "S",   # Security (detects common vulnerabilities).
-    "NPY", # Numpy (detects common issues with numpy)
-    "PD",  # Pandas (detects common issues with pandas).
-]
 
-ignore = ["S101", "PD901"]
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "Q", "S", "NPY", "PD", "W", "RUF"]
+ignore = ["S101","S301", "PD901", "RUF013"]
+
+[tool.sqlfluff.core]
+dialect = "postgres"
+rules = "all"
+output_line_length = 120
+processes = -1
+exclude_rules = "RF01"
+max_line_length = 120
+large_file_skip_byte_limit = 0
+[tool.sqlfluff.indentation]
+indented_joins = false
+indent_using_on = true
+template_blocks_indent = false
+indent_unit = "space"
+tab_space_size = 4
+
+[tool.taskipy.tasks]
+# Run tests with check for the presence of test files
+test = "test -d tests && pytest || echo 'No tests found, skipping...'"
+# Static type checking
+typecheck = "basedpyright"
+# Clean build artifacts
+clean = "rm -rf __pycache__ .pytest_cache .mypy_cache dist build *.egg-info"
+# Run Streamlit app with check for app file
+app = "test -f src/app.py && streamlit run src/app.py || echo 'No Streamlit app found, skipping...'"
+# Python Lint only
+lint = "ruff check ."
+# Format & autofix everything Ruff can
+format = "ruff check . --fix && ruff format ."
+# SQL Lint with fallback if no SQL files
+sqllint = "test -d sql && sqlfluff lint sql/ || echo 'No SQL to lint, skipping...'"
+# SQL Format with fallback if no SQL files
+sqlformat = "test -d sql && sqlfluff fix sql/ && sqlfluff format sql/ || echo 'No SQL to format, skipping...'"
+# Full project health check
+check = "task clean && task lint && task sqllint && task typecheck && task test"

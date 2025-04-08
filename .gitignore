@@ -20,6 +20,6 @@ wheels/
 
 *.png
 
-
-uv.lock
-pyproyect.toml
+.DS_Store
+# uv.lock
+# pyproyect.toml

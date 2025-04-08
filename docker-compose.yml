@@ -1,0 +1,12 @@
+# version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8051:8051"
+    volumes:
+      - ./src/.env:/app/src/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MONGO_URI=${MONGO_URI}
