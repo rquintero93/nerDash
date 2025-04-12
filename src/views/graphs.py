@@ -119,6 +119,7 @@ def visualize_tsne(reduced_embeddings, cluster_labels):
         y=reduced_embeddings[:, 1],
         color=cluster_labels,
         title="t-SNE visualization of Embeddings by Cluster",
+        color_discrete_map="identity",
     )
 
     fig.update_layout(

@@ -114,7 +114,6 @@ def build_similarity_graph(concepts, embeddings, threshold=0.7):
     return G
 
 
-@st.cache_resource(ttl=3600, show_spinner=False)
 def reduce_embeddings_tsne(embeddings, use_cached=USE_CACHED):
     cache_path = "models/tsne_embeddings.pkl"
 

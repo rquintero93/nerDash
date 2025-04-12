@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
     "bertopic>=0.17.0",
     "clang>=20.1.0",
+    "hf-xet>=1.0.3",
     "loguru>=0.7.3",
     "matplotlib>=3.10.1",
     "networkx>=3.4.2",
