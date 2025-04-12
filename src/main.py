@@ -5,7 +5,7 @@ Streamlit app for visualizing the AI Thought Network.
 
 import streamlit as st
 
-from controllers import count_card_names, count_primary_colors, get_cards_df
+from controllers import count_card_names, get_cards_df
 from controllers.nlp import (
     analyze_sentiment_emotion,
     cluster_concepts,
@@ -67,27 +67,13 @@ def main():
         type_pie_chart = make_pie_chart(data=df_cards, column="type")
         st.plotly_chart(type_pie_chart, use_container_width=True)
 
-    st.header("Primary Color Distribution")
-    color_counter = count_primary_colors(data=df_cards, concept="colors")
-    color_counter_bar_chart = make_bar_chart(data=color_counter)
-    st.plotly_chart(color_counter_bar_chart, use_container_width=True)
-
-    col8, col9 = st.columns(2)
-    with col8:
-        st.header("Full Color Distribution")
-        color_pie_chart = make_pie_chart(data=df_cards, column="colors")
-        st.plotly_chart(color_pie_chart, use_container_width=True)
-
-    with col9:
-        st.header("Popular Card Names")
-        name_counter = count_card_names(df_cards, "name")
-        filtered_name_counter = dict(
-            sorted(name_counter.items(), key=lambda item: item[1], reverse=True)[:20]
-        )
-        name_counter_bar_chart = make_bar_chart(
-            data=filtered_name_counter, orientation="h"
-        )
-        st.plotly_chart(name_counter_bar_chart, use_container_width=True)
+    st.header("Popular Card Names")
+    name_counter = count_card_names(df_cards, "name")
+    filtered_name_counter = dict(
+        sorted(name_counter.items(), key=lambda item: item[1], reverse=True)[:20]
+    )
+    name_counter_bar_chart = make_bar_chart(data=filtered_name_counter, orientation="h")
+    st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
     descriptions = df_cards["flavorText"].tolist()
 
