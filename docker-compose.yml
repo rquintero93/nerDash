@@ -11,4 +11,7 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
+      - OMP_NUM_THREADS=1
+      - NUMEXPR_NUM_THREADS=1
+      - TOKENIZERS_PARALLELISM=false
     restart: always
