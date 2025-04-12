@@ -9,7 +9,14 @@ Initialization file for the controllers package.
 from models.mongo import get_mongo_cards
 
 # Re-export controller functions
-from .functions import count_card_names, count_primary_colors, get_bar_df, get_cards_df, get_line_df, get_pie_df
+from .functions import (
+                        count_card_names,
+                        count_primary_colors,
+                        get_bar_df,
+                        get_cards_df,
+                        get_line_df,
+                        get_pie_df,
+)
 
 __all__ = [
                         "count_card_names",

@@ -10,7 +10,14 @@ Initialization file for the utils package.
 from . import constants
 
 # Re-export utility functions. This allows users to import them directly from the package.
-from .functions import clean_colors, clean_mana_cost, clean_timestamp, is_row_valid, is_valid_chart_data, sort_strings
+from .functions import (
+                        clean_colors,
+                        clean_mana_cost,
+                        clean_timestamp,
+                        is_row_valid,
+                        is_valid_chart_data,
+                        sort_strings,
+)
 
 __all__ = [
                         "clean_colors",

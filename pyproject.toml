@@ -1,3 +1,7 @@
+# [build-system]
+# requires = ["setuptools>=65", "wheel"]  # Use setuptools as build backend (PEP 621)
+# build-backend = "setuptools.build_meta"
+
 [project]
 name = "nerdbot"
 version = "0.1.0"
@@ -15,8 +19,6 @@ dependencies = [
     "pip>=25.0",
     "plotly>=5.24.1",
     "pymongo>=4.10.1",
-    "pynvim>=0.5.2",
-    "pytest>=8.3.5",
     "python-dotenv>=1.0.1",
     "scikit-learn>=1.6.1",
     "scipy>=1.15.1",
@@ -25,13 +27,35 @@ dependencies = [
     "transformers>=4.50.3",
     "typing>=3.10.0.0",
     "watchdog>=6.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pynvim>=0.5.2",
+    "pytest>=8.3.5",
     "taskipy>=1.12.2",
     "ruff>=0.4.0",
     "pytest>=8.1.1",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock",
+    "coverage[toml]",
+    "pre-commit",
+    "bandit",
+    "hypothesis",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-git-revision-date-localized-plugin",
     "basedpyright>=1.10.5",
     "visidata>=3.1.1",
     "ipython>=9.1.0",
 ]
+# [tool.setuptools]
+# package-dir = { "" = "src" } # Use src/ layout for package code
+#
+# [tool.setuptools.packages.find]
+# where = ["src"]
 
 [tool.basedpyright]
 ignore = ['*']
@@ -43,12 +67,30 @@ reportCallIssue = "information"
 
 [tool.ruff]
 fix = true
-line-length = 120
+line-length = 88
 exclude = ["*/.venv"]
 
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "Q", "S", "NPY", "PD", "W", "RUF"]
-ignore = ["S101","S301", "PD901", "RUF013"]
+ignore = ["S101", "S301", "PD901", "RUF013", "B018"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=src --cov-report=term-missing"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = true
+# source = ["src/your_package_name"]
+omit = ["*/tests/*", "*/.venv/*"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
 
 [tool.sqlfluff.core]
 dialect = "postgres"
@@ -58,6 +100,7 @@ processes = -1
 exclude_rules = "RF01"
 max_line_length = 120
 large_file_skip_byte_limit = 0
+
 [tool.sqlfluff.indentation]
 indented_joins = false
 indent_using_on = true
@@ -66,21 +109,32 @@ indent_unit = "space"
 tab_space_size = 4
 
 [tool.taskipy.tasks]
+help = "echo 'Available tasks: format, lint, typecheck, test, coverage, sqllint, sqlformat, docs_serve, docs_build, security, clean, check, dockerbuild, app, run'"
 # Run tests with check for the presence of test files
-test = "test -d tests && pytest || echo 'No tests found, skipping...'"
+test = "test -d tests && uv run pytest || echo 'No tests found, skipping...'"
+coverage = "uv run coverage run -m pytest && uv run coverage report -m"
 # Static type checking
-typecheck = "basedpyright"
+typecheck = "uv run basedpyright"
 # Clean build artifacts
 clean = "rm -rf __pycache__ .pytest_cache .mypy_cache dist build *.egg-info"
 # Run Streamlit app with check for app file
 app = "test -f src/app.py && streamlit run src/app.py || echo 'No Streamlit app found, skipping...'"
+# Run main 
+run = "python3 src/main.py"
 # Python Lint only
-lint = "ruff check ."
+lint = "uv run ruff check ."
 # Format & autofix everything Ruff can
-format = "ruff check . --fix && ruff format ."
+format = "uv run ruff check . --fix && ruff format ."
 # SQL Lint with fallback if no SQL files
-sqllint = "test -d sql && sqlfluff lint sql/ || echo 'No SQL to lint, skipping...'"
+sqllint = "test -d sql && uv run sqlfluff lint sql/ || echo 'No SQL to lint, skipping...'"
 # SQL Format with fallback if no SQL files
-sqlformat = "test -d sql && sqlfluff fix sql/ && sqlfluff format sql/ || echo 'No SQL to format, skipping...'"
+sqlformat = "test -d sql && uv run sqlfluff fix sql/ && uv run sqlfluff format sql/ || echo 'No SQL to format, skipping...'"
 # Full project health check
 check = "task clean && task lint && task sqllint && task typecheck && task test"
+# Smart Docker build with dynamic image name based on project name
+dockerbuild = "docker build -t $(basename \"$PWD\" | tr '[:upper:]' '[:lower:]') ."
+# Serve documentation locally
+docs_serve = "uv run mkdocs serve"
+docs_build = "uv run mkdocs build"
+# Security checks 
+security = "uv run bandit -r src"
