@@ -17,7 +17,7 @@ from utils import constants, is_valid_chart_data
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
 logger.add(
-    "src/views/graph_logs.log",
+    "logs/graph_logs.log",
     rotation="10MB",
     level="INFO",
     format="{time} {level} {message}",
@@ -246,14 +246,18 @@ def make_bar_chart(
     layout_updates = {"showlegend": True}
 
     if orientation == "h":
-        layout_updates.update({"height": len(bar_counts) * 25, "margin": dict(l=200), "bargap": 0.15})
+        layout_updates.update(
+            {"height": len(bar_counts) * 25, "margin": dict(l=200), "bargap": 0.15}
+        )
 
     fig.update_layout(**layout_updates)
     logger.info("Bar chart successfully created.")
     return fig
 
 
-def make_pie_chart(data: pd.DataFrame = None, column: str = None, show_legend: str = None) -> px.pie:
+def make_pie_chart(
+    data: pd.DataFrame = None, column: str = None, show_legend: str = None
+) -> px.pie:
     """
     Creates a plotly pie chart with some default settings.
 

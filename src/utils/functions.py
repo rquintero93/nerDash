@@ -13,14 +13,16 @@ from utils import constants
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
 logger.add(
-    "src/utils/function_logs.log",
+    "logs/function_logs.log",
     rotation="10MB",
     level="INFO",
     format="{time} {level} {message}",
 )
 
 
-def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column: str = None) -> tuple[bool, str]:
+def is_valid_chart_data(
+    data: Union[pd.DataFrame, dict] = None, column: str = None
+) -> tuple[bool, str]:
     """
     Validate the data for a bar chart. adds error_code for invalid data.
 
@@ -39,7 +41,9 @@ def is_valid_chart_data(data: Union[pd.DataFrame, dict] = None, column: str = No
     if not isinstance(data, pd.DataFrame) and not isinstance(data, dict):
         return (False, constants.ERROR_MESSAGE_DATA_NOT_DF_OR_DICT)
 
-    if isinstance(data, pd.DataFrame) and (column is None or column not in data.columns):
+    if isinstance(data, pd.DataFrame) and (
+        column is None or column not in data.columns
+    ):
         return (False, constants.ERROR_MESSAGE_COLUMN_NOT_IN_DF)
 
     else:
@@ -125,7 +129,11 @@ def clean_colors(row: pd.Series) -> list:
         if not color:
             normalized_colors.append("Colorless")
         else:
-            normalized_colors.append(constants.COLOR_TO_LABEL_MAP.get(color, color if len(color) == 1 else "Colorless"))
+            normalized_colors.append(
+                constants.COLOR_TO_LABEL_MAP.get(
+                    color, color if len(color) == 1 else "Colorless"
+                )
+            )
 
     return sort_strings(normalized_colors)
 

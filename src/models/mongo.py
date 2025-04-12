@@ -3,8 +3,7 @@ Functions to explore MongoDB database.
 """
 
 import pandas as pd
-
-# import streamlit as st
+import streamlit as st
 from loguru import logger
 from pymongo import MongoClient
 
@@ -14,7 +13,7 @@ from utils import constants
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
 logger.add(
-    "src/models/mongo_logs.log",
+    "logs/mongo_logs.log",
     rotation="10MB",
     level="INFO",
     format="{time} {level} {message}",
@@ -53,7 +52,7 @@ class MongoDBClient:
         logger.info("MongoDB connection closed.")
 
 
-# @st.cache_resource(ttl=3600, show_spinner=False)
+@st.cache_resource(ttl=3600, show_spinner=False)
 def get_database(db_name: str) -> MongoClient:
     """
     Get a MongoDB database instance.
@@ -70,7 +69,7 @@ def get_database(db_name: str) -> MongoClient:
     return client[db_name]
 
 
-# @st.cache_data(ttl=3600, show_spinner=False)
+@st.cache_data(ttl=3600, show_spinner=False)
 def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
@@ -83,7 +82,9 @@ def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
         pd.DataFrame: DataFrame containing the queried data.
     """
 
-    logger.info(f"Fetching data from MongoDB | Database: {db}, Collection: {target_collection}")
+    logger.info(
+        f"Fetching data from MongoDB | Database: {db}, Collection: {target_collection}"
+    )
 
     collection = get_database(db)[target_collection]
 

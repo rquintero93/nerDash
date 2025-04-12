@@ -15,7 +15,7 @@ from utils import clean_colors, clean_timestamp
 # Configure Loguru
 logger.remove()  # Remove default logger to customize settings
 logger.add(
-    "src/controllers/function_logs.log",
+    "logs/function_logs.log",
     rotation="10MB",
     level="INFO",
     format="{time} {level} {message}",
@@ -53,7 +53,9 @@ def get_pie_df(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
         pie_counts (pd.DataFrame): The data to plot.
 
     """
-    data[column] = data[column].apply(lambda x: "".join(sorted(x)) if isinstance(x, list) else x)
+    data[column] = data[column].apply(
+        lambda x: "".join(sorted(x)) if isinstance(x, list) else x
+    )
 
     pie_counts = data[column].value_counts().reset_index()
     pie_counts.columns = [column, "count"]
@@ -64,7 +66,9 @@ def get_pie_df(data: pd.DataFrame = None, column: str = None) -> pd.DataFrame:
     return pie_counts
 
 
-def get_line_df(data: pd.DataFrame = None, x: str = None, y: str = None) -> pd.DataFrame:
+def get_line_df(
+    data: pd.DataFrame = None, x: str = None, y: str = None
+) -> pd.DataFrame:
     """
     Prepares the data for a line chart.
 
@@ -79,12 +83,16 @@ def get_line_df(data: pd.DataFrame = None, x: str = None, y: str = None) -> pd.D
     data[y] = pd.to_datetime(data[y], errors="coerce")
     filtered = data.dropna(subset=[y])
 
-    line_counts = filtered.groupby(filtered[y].dt.date)[x].nunique().reset_index(name="count")
+    line_counts = (
+        filtered.groupby(filtered[y].dt.date)[x].nunique().reset_index(name="count")
+    )
 
     return line_counts
 
 
-def get_bar_df(data: Union[pd.DataFrame, dict] = None, column: str = None) -> pd.DataFrame:
+def get_bar_df(
+    data: Union[pd.DataFrame, dict] = None, column: str = None
+) -> pd.DataFrame:
     """
     Prepares the data for a bar chart.
 
@@ -145,7 +153,9 @@ def count_card_names(df: pd.DataFrame, names: str) -> dict:
         if name:
             # If it's a list, add each item as a single unit
             if isinstance(name, list):
-                name_counter.update([tuple(name)])  # Convert list to tuple to make it hashable
+                name_counter.update(
+                    [tuple(name)]
+                )  # Convert list to tuple to make it hashable
             else:
                 name_counter.update([name])  # Add the string as a single unit
 
