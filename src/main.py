@@ -95,7 +95,7 @@ def main():
     df_cards["topic"] = topics
 
     st.plotly_chart(visulize_topic_barchart(topic_model), use_container_width=True)
-    st.plotly_chart(visualize_topic_heatmap(topic_model), use_container_width=True)
+    # st.plotly_chart(visualize_topic_heatmap(topic_model), use_container_width=True)
     st.plotly_chart(visualize_topic_hierarchy(topic_model), use_container_width=True)
 
     # 3. Sentiment and Emotion Analysis
