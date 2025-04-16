@@ -18,8 +18,6 @@ from views import (
     make_line_chart,
     make_pie_chart,
     make_sentiment_over_time,
-    visualize_topic_heatmap,
-    visualize_topic_hierarchy,
     visualize_tsne,
     visulize_topic_barchart,
 )
@@ -96,7 +94,7 @@ def main():
 
     st.plotly_chart(visulize_topic_barchart(topic_model), use_container_width=True)
     # st.plotly_chart(visualize_topic_heatmap(topic_model), use_container_width=True)
-    st.plotly_chart(visualize_topic_hierarchy(topic_model), use_container_width=True)
+    # st.plotly_chart(visualize_topic_hierarchy(topic_model), use_container_width=True)
 
     # 3. Sentiment and Emotion Analysis
     sentiments, emotions = analyze_sentiment_emotion(descriptions)
