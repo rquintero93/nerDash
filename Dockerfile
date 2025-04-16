@@ -4,26 +4,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Use pip to install uv directly instead of pipx
+# Install uv
 RUN pip install --no-cache-dir 'uv>=0.1.30'
 
-# Set environment for uv virtualenv
+# Create non-root user
+RUN useradd --create-home appuser
+
+# Switch to non-root user early
+USER appuser
+WORKDIR /app
+
+# Set env for uv virtualenv
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-WORKDIR /app
-
-COPY pyproject.toml ./
+# Copy and install deps
+COPY --chown=appuser:appuser pyproject.toml ./
 RUN uv sync --no-dev
 
-# Add application code
-COPY src src
-COPY .streamlit .streamlit
-
-# Add non-root user & set permissions
-RUN useradd --create-home appuser && \
-    chown -R appuser:appuser /app
-USER appuser
+# Copy app code
+COPY --chown=appuser:appuser src src
+COPY --chown=appuser:appuser .streamlit .streamlit
 
 EXPOSE 8051
 
