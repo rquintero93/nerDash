@@ -72,22 +72,7 @@ def make_line_chart(data: pd.DataFrame = None, x: str = None, y: str = None) -> 
     return fig
 
 
-def visulize_topic_barchart(topic_model, top_n_topics=10):
-    fig = topic_model.visualize_barchart(top_n_topics=top_n_topics)
-    return fig
-
-
-def visualize_topic_heatmap(topic_model):
-    fig = topic_model.visualize_heatmap()
-    return fig
-
-
-def visualize_topic_hierarchy(topic_model):
-    fig = topic_model.visualize_hierarchy()
-    return fig
-
-
-def visualize_graph(G, concepts, output_file="similarity_graph.png"):
+def visualize_graph(G, concepts, output_file="similarity_graph.png") -> None:
     pos = nx.spring_layout(G, seed=42)
     plt.figure(figsize=(10, 8))
     nx.draw_networkx_nodes(G, pos, node_color="skyblue", node_size=500)
@@ -100,7 +85,7 @@ def visualize_graph(G, concepts, output_file="similarity_graph.png"):
     plt.close()
 
 
-def visualize_tsne(reduced_embeddings, cluster_labels):
+def visualize_tsne(reduced_embeddings, cluster_labels, names) -> px.scatter:
     """
     Performs t-SNE dimensionality reduction and returns a Plotly visualization.
 
@@ -110,16 +95,18 @@ def visualize_tsne(reduced_embeddings, cluster_labels):
         output_file: Deprecated. Kept for backwards compatibility.
 
     Returns:
-        plotly.graph_objects.Figure: A Plotly figure object showing the t-SNE visualization
+        plotly.graph_objects.Figure: A Plotly figure object showing the t-SNE
     """
 
+    cluster_labels = cluster_labels.astype(str)
     # Create plotly figure
     fig = px.scatter(
         x=reduced_embeddings[:, 0],
         y=reduced_embeddings[:, 1],
         color=cluster_labels,
+        hover_name=names,
         title="t-SNE visualization of Embeddings by Cluster",
-        color_discrete_map="identity",
+        color_discrete_sequence=px.colors.qualitative.Bold,
     )
 
     fig.update_layout(
@@ -134,7 +121,7 @@ def visualize_tsne(reduced_embeddings, cluster_labels):
     return fig
 
 
-def make_sentiment_over_time(df, sentiments, output_file=None):
+def make_sentiment_over_time(df, sentiments, output_file=None) -> px.line:
     """
     Creates a Plotly line chart showing sentiment trends over time.
 
@@ -163,7 +150,7 @@ def make_sentiment_over_time(df, sentiments, output_file=None):
     # Map each sentiment to our 5-point scale (defaulting to 0 for unknown labels)
     df["sentiment_score"] = [sentiment_mapping.get(s["label"], 0) for s in sentiments]
 
-    df.set_index("createdAt", inplace=True)
+    df = df.set_index("createdAt")
     # Resample daily and take mean score
     sentiment_series = df["sentiment_score"].resample("D").mean().reset_index()
 
@@ -210,8 +197,8 @@ def make_bar_chart(
     Creates a plotly bar chart with some default settings.
 
     Args:
-        data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
-        orientation (Optional[str]): The orientation of the bar chart. Defaults to vertical, pass 'h' for horizontal.
+        data (Union[pd.DataFrame, dict]): The data to plot.
+        orientation (Optional[str]): The orientation of the bar chart.
         column (str): The column to plot from the DataFrame.
 
     Returns:
@@ -569,7 +556,7 @@ def make_pie_chart(
 #         return f"#{hash_val % 0xFFFFFF:06x}"
 #
 #     unique_names = {
-#         data.get("name", "Unknown") for _, data in G.nodes(data=True) if "name" in data
+#         data.get("name", "Unknown") for _, data in G.nodes(data=True)if "name" in data
 #     }
 #     name_color_map = {name: hash_color(name) for name in unique_names}
 #     default_color = "#d62728"
@@ -613,7 +600,7 @@ def make_pie_chart(
 #             f"Type: {data.get('node_type', 'Unknown')}<br>"
 #             f"Colors: {data.get('colors', 'Unknown')}<br>"
 #             f"Mana Cost: {data.get('mana_cost', 'Unknown')}<br>"
-#             f"Connecting Concepts: {concept_count}<br>"  # Include node's degree (connections)
+#             f"Connecting Concepts: {concept_count}<br>"
 #             f"Total Retrievals: {data.get('retrievalCount', 'Unknown')}<br>"
 #             f"Total Associated Cards: {len(data.get('ids', []))}"
 #         )

@@ -10,7 +10,6 @@ from controllers.nlp import (
     analyze_sentiment_emotion,
     cluster_concepts,
     compute_embeddings,
-    model_topics,
     reduce_embeddings_tsne,
 )
 from views import (
@@ -19,7 +18,6 @@ from views import (
     make_pie_chart,
     make_sentiment_over_time,
     visualize_tsne,
-    visulize_topic_barchart,
 )
 
 
@@ -73,28 +71,21 @@ def main():
     name_counter_bar_chart = make_bar_chart(data=filtered_name_counter, orientation="h")
     st.plotly_chart(name_counter_bar_chart, use_container_width=True)
 
+    st.header("Computing Embeddings...")
     descriptions = df_cards["flavorText"].tolist()
 
-    # 1. Compute embeddings using SentenceTransformer
-    # 5. Visualize embeddings with t-SNE (with optional clustering)
     embeddings, st_model = compute_embeddings(descriptions)
 
-    staging = cluster_concepts(descriptions, num_clusters=8, len_df=df_cards.shape[0])
+    staging = cluster_concepts(embeddings, num_clusters=8, len_df=df_cards.shape[0])
 
     df_cards = df_cards.head(staging.shape[0])
     df_cards["cluster"] = staging
 
     reduced_embeddings = reduce_embeddings_tsne(embeddings)
-    tsne_graph = visualize_tsne(reduced_embeddings, df_cards["cluster"])
+    tsne_graph = visualize_tsne(
+        reduced_embeddings, df_cards["cluster"], df_cards["name"]
+    )
     st.plotly_chart(tsne_graph, use_container_width=True)
-
-    # 2. Topic Modeling with BERTopic
-    topics, topic_model = model_topics(descriptions)
-    df_cards["topic"] = topics
-
-    st.plotly_chart(visulize_topic_barchart(topic_model), use_container_width=True)
-    # st.plotly_chart(visualize_topic_heatmap(topic_model), use_container_width=True)
-    # st.plotly_chart(visualize_topic_hierarchy(topic_model), use_container_width=True)
 
     # 3. Sentiment and Emotion Analysis
     sentiments, emotions = analyze_sentiment_emotion(descriptions)

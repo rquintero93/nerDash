@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import pandas as pd
 
-from models import MongoDBClient, get_mongo_cards
-from utils import constants
+from src.models import MongoDBClient, get_mongo_cards
+from src.utils import constants
 
 
 def test_get_mongo_client(mocker):
@@ -79,4 +79,4 @@ def test_get_mongo_cards_non_kengrams(mocker):
     # Close the client
     if MongoDBClient._instance:
         # MongoDBClient._instance.close()
-        MongoDBClient._instance.client.close.assert_called_once()  # Ensure close() was called
+        MongoDBClient._instance.client.close.assert_called_once()

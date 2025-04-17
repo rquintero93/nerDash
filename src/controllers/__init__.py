@@ -6,24 +6,21 @@ Initialization file for the controllers package.
 - Ensures `get_mongo_cards` is accessible within controllers.
 """
 
-from models.mongo import get_mongo_cards
-
 # Re-export controller functions
 from .functions import (
-                        count_card_names,
-                        count_primary_colors,
-                        get_bar_df,
-                        get_cards_df,
-                        get_line_df,
-                        get_pie_df,
+    count_card_names,
+    count_primary_colors,
+    get_bar_df,
+    get_cards_df,
+    get_line_df,
+    get_pie_df,
 )
 
 __all__ = [
-                        "count_card_names",
-                        "count_primary_colors",
-                        "get_bar_df",
-                        "get_cards_df",
-                        "get_line_df",
-                        "get_mongo_cards",
-                        "get_pie_df",
+    "count_card_names",
+    "count_primary_colors",
+    "get_bar_df",
+    "get_cards_df",
+    "get_line_df",
+    "get_pie_df",
 ]

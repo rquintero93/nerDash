@@ -6,8 +6,8 @@ Tests for the views.graphs module.
 import pandas as pd
 import pytest
 
-from utils import constants
-from views import make_bar_chart, make_line_chart, make_pie_chart
+from src.utils import constants
+from src.views import make_bar_chart, make_line_chart, make_pie_chart
 
 
 def test_make_bar_chart():

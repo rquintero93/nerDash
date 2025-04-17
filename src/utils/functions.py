@@ -27,7 +27,7 @@ def is_valid_chart_data(
     Validate the data for a bar chart. adds error_code for invalid data.
 
     Args:
-        data (Union[pd.DataFrame, dict]): The data to plot. If a DataFrame, the column argument must be provided.
+        data (Union[pd.DataFrame, dict]): The data to plot.
         column (str): The column to plot from the DataFrame.
 
     Returns:

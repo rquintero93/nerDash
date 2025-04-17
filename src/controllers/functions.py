@@ -198,7 +198,7 @@ def count_card_names(df: pd.DataFrame, names: str) -> dict:
 #
 #     # Convert `id` column to string
 #     mongo_merge_df["id"] = mongo_merge_df["id"].astype(str)
-#     mongo_merge_df["metadata.timestamp"] = mongo_merge_df["metadata.timestamp"].astype(
+#     mongo_merge_df["metadata.timestamp"]=mongo_merge_df["metadata.timestamp"].astype(
 #         str
 #     )
 #

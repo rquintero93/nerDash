@@ -27,6 +27,7 @@ def get_chroma(limit: int, offset: int) -> pd.DataFrame:
     response = requests.post(
         # " https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections",
         "https://chroma.bot.fun/api/v2/tenants/default_tenant/databases/default_database/collections/9937882c-0661-4ff5-bc6f-f0aff3203bd4/get",
+        timeout=10,
         headers={
             "x-api-key": API_KEY,
         },
@@ -80,7 +81,7 @@ def get_chroma(limit: int, offset: int) -> pd.DataFrame:
     # # Extract data from document column into new columns
     # expanded_columns = df["document"].str.extract(pattern)
     #
-    # # Combine extracted columns with the original DataFrame (dropping the document column)
+    # # Combine extracted columns with the original DataFrame
     # df = df.drop(columns=["document"]).join(expanded_columns)
     #
     # Display the DataFrame

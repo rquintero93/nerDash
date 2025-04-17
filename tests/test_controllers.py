@@ -5,7 +5,7 @@ Test the functions in controllers.utils.py.
 
 import pandas as pd
 
-from controllers import (
+from src.controllers import (
     count_card_names,
     count_primary_colors,
     get_cards_df,
