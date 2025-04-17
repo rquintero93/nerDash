@@ -3,6 +3,7 @@ Functions to explore MongoDB database.
 """
 
 import pandas as pd
+import streamlit as st
 from loguru import logger
 from pymongo import MongoClient
 
@@ -51,7 +52,7 @@ class MongoDBClient:
         logger.info("MongoDB connection closed.")
 
 
-# @st.cache_resource(ttl=3600, show_spinner=False)
+@st.cache_resource(ttl=3600, show_spinner=False)
 def get_database(db_name: str) -> MongoClient:
     """
     Get a MongoDB database instance.
@@ -68,7 +69,7 @@ def get_database(db_name: str) -> MongoClient:
     return client[db_name]
 
 
-# @st.cache_data(ttl=3600, show_spinner=False)
+@st.cache_data(ttl=3600, show_spinner=False)
 def get_mongo_cards(db: str, target_collection: str) -> pd.DataFrame:
     """
     Retrieve cards from the target collection using MongoDB aggregation.
