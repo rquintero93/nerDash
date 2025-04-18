@@ -50,7 +50,7 @@ def compute_embeddings(
     return embeddings, model
 
 
-# @st.cache_resource(ttl=3600, show_spinner=False)
+@st.cache_resource(ttl=3600, show_spinner=False)
 def analyze_sentiment_emotion(descriptions):
     sentiment_pipeline = pipeline(
         "text-classification",
@@ -82,7 +82,6 @@ def analyze_sentiment_emotion(descriptions):
     return results
 
 
-# @st.cache_resource(ttl=3600, show_spinner=False)
 def build_similarity_graph(concepts, embeddings, threshold=0.5, max_edges=1000):
     # Each node is a concept and edges exist if similarity > threshold
     G = nx.Graph()
@@ -171,7 +170,6 @@ def reduce_embeddings_tsne(embeddings):
     return reduced_embeddings
 
 
-# @st.cache_resource(ttl=3600, show_spinner=False)
 def cluster_concepts(embeddings, num_clusters):
     # Create placeholder elements
     status_placeholder = st.empty()
