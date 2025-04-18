@@ -9,6 +9,7 @@ import networkx as nx
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import streamlit as st
 from loguru import logger
 
 from controllers import get_bar_df, get_line_df, get_pie_df
@@ -83,24 +84,43 @@ def visualize_graph(G, concepts) -> go.Figure:
     Returns:
         plotly.graph_objects.Figure: A Plotly figure showing the graph
     """
+
+    # Create placeholder elements
+    status_placeholder = st.empty()
+    progress_placeholder = st.empty()
+
+    status_placeholder.write("Creating graph visualization...")
+    progress_placeholder.progress(0)
+
     # Limit to largest connected component if graph is too large
     if len(G.nodes()) > 200:
+        progress_placeholder.progress(0.1)
+        status_placeholder.write(
+            "Graph is large, limiting to largest connected component..."
+        )
         largest_cc = max(nx.connected_components(G), key=len)
         G = G.subgraph(largest_cc).copy()
 
     # Use faster layout algorithm for large graphs
+    progress_placeholder.progress(0.2)
+    status_placeholder.write(f"Computing layout for {len(G.nodes())} nodes...")
     if len(G.nodes()) > 100:
         pos = nx.kamada_kawai_layout(G)
     else:
         pos = nx.spring_layout(G, seed=42)
 
     # --- edge trace ---
+    progress_placeholder.progress(0.5)
+    status_placeholder.write("Building edge traces...")
     edge_x, edge_y = [], []
-    for u, v in G.edges():
+    total_edges = len(G.edges())
+    for i, (u, v) in enumerate(G.edges()):
         x0, y0 = pos[u]
         x1, y1 = pos[v]
         edge_x.extend([x0, x1, None])
         edge_y.extend([y0, y1, None])
+        if i % max(1, total_edges // 10) == 0:  # Update every 10%
+            progress_placeholder.progress(0.5 + (0.2 * i / total_edges))
 
     edge_trace = px.line(x=edge_x, y=edge_y).data[0]
     edge_trace.update(
@@ -108,13 +128,18 @@ def visualize_graph(G, concepts) -> go.Figure:
     )
 
     # --- node trace ---
+    progress_placeholder.progress(0.7)
+    status_placeholder.write("Building node traces...")
     node_x, node_y = [], []
     hover_text = []
-    for node in G.nodes():
+    total_nodes = len(G.nodes())
+    for i, node in enumerate(G.nodes()):
         x, y = pos[node]
         node_x.append(x)
         node_y.append(y)
         hover_text.append(concepts[node])
+        if i % max(1, total_nodes // 10) == 0:  # Update every 10%
+            progress_placeholder.progress(0.7 + (0.2 * i / total_nodes))
 
     node_trace = go.Scatter(
         x=node_x,
@@ -127,6 +152,8 @@ def visualize_graph(G, concepts) -> go.Figure:
     )
 
     # --- assemble figure ---
+    progress_placeholder.progress(0.9)
+    status_placeholder.write("Assembling final visualization...")
     fig = go.Figure(data=[edge_trace, node_trace])
     fig.update_layout(
         title="Concept Similarity Graph",
@@ -137,6 +164,12 @@ def visualize_graph(G, concepts) -> go.Figure:
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
     )
+
+    progress_placeholder.progress(1.0)
+
+    # Clear placeholders when done
+    status_placeholder.empty()
+    progress_placeholder.empty()
 
     return fig
 
@@ -153,8 +186,18 @@ def visualize_tsne(reduced_embeddings, cluster_labels, names) -> px.scatter:
     Returns:
         plotly.graph_objects.Figure: A Plotly figure object showing the t-SNE
     """
+    # Create placeholder elements
+    status_placeholder = st.empty()
+    progress_placeholder = st.empty()
+
+    status_placeholder.write("Creating t-SNE visualization...")
+    progress_placeholder.progress(0.3)
 
     cluster_labels = cluster_labels.astype(str)
+
+    # Data preparation
+    progress_placeholder.progress(0.6)
+
     # Create plotly figure
     fig = px.scatter(
         x=reduced_embeddings[:, 0],
@@ -173,6 +216,12 @@ def visualize_tsne(reduced_embeddings, cluster_labels, names) -> px.scatter:
         height=600,
         width=800,
     )
+
+    progress_placeholder.progress(1.0)
+
+    # Clear placeholders when done
+    status_placeholder.empty()
+    progress_placeholder.empty()
 
     return fig
 
@@ -241,6 +290,7 @@ def make_sentiment_over_time(df, sentiments, output_file=None) -> px.line:
         xref="paper",
     )
 
+    print("creating figure finished")
     return fig
 
 

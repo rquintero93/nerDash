@@ -1140,6 +1140,7 @@ dependencies = [
     { name = "scipy" },
     { name = "sentence-transformers" },
     { name = "streamlit" },
+    { name = "torch" },
     { name = "transformers" },
     { name = "watchdog" },
 ]
@@ -1183,6 +1184,7 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.15.1" },
     { name = "sentence-transformers", specifier = ">=4.0.2" },
     { name = "streamlit", specifier = ">=1.41.1" },
+    { name = "torch", specifier = ">=2.6.0" },
     { name = "transformers", specifier = ">=4.50.3" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
