@@ -11,6 +11,7 @@ from .graphs import (
     make_line_chart,
     make_pie_chart,
     make_sentiment_over_time,
+    visualize_graph,
     visualize_tsne,
 )
 
@@ -19,5 +20,6 @@ __all__ = [
     "make_line_chart",
     "make_pie_chart",
     "make_sentiment_over_time",
+    "visualize_graph",
     "visualize_tsne",
 ]

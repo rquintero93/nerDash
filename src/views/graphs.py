@@ -5,10 +5,10 @@ Graphing functions for the AI Thought Network.
 
 from typing import Optional, Union
 
-import matplotlib as plt
 import networkx as nx
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from loguru import logger
 
 from controllers import get_bar_df, get_line_df, get_pie_df
@@ -72,17 +72,73 @@ def make_line_chart(data: pd.DataFrame = None, x: str = None, y: str = None) -> 
     return fig
 
 
-def visualize_graph(G, concepts, output_file="similarity_graph.png") -> None:
-    pos = nx.spring_layout(G, seed=42)
-    plt.figure(figsize=(10, 8))
-    nx.draw_networkx_nodes(G, pos, node_color="skyblue", node_size=500)
-    nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.7)
-    # labels = {i: concepts[i] for i in G.nodes()}
-    # nx.draw_networkx_labels(G, pos, labels, font_size=10)
-    plt.title("Concept Similarity Graph")
-    plt.axis("off")
-    plt.savefig(output_file)
-    plt.close()
+def visualize_graph(G, concepts) -> go.Figure:
+    """
+    Visualizes a networkx graph using Plotly.
+
+    Args:
+        G: The networkx graph to visualize
+        concepts: A dict or list mapping node IDs to labels
+
+    Returns:
+        plotly.graph_objects.Figure: A Plotly figure showing the graph
+    """
+    # Limit to largest connected component if graph is too large
+    if len(G.nodes()) > 200:
+        largest_cc = max(nx.connected_components(G), key=len)
+        G = G.subgraph(largest_cc).copy()
+
+    # Use faster layout algorithm for large graphs
+    if len(G.nodes()) > 100:
+        pos = nx.kamada_kawai_layout(G)
+    else:
+        pos = nx.spring_layout(G, seed=42)
+
+    # --- edge trace ---
+    edge_x, edge_y = [], []
+    for u, v in G.edges():
+        x0, y0 = pos[u]
+        x1, y1 = pos[v]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
+
+    edge_trace = px.line(x=edge_x, y=edge_y).data[0]
+    edge_trace.update(
+        line=dict(width=1, color="gray"), hoverinfo="none", mode="lines", opacity=0.3
+    )
+
+    # --- node trace ---
+    node_x, node_y = [], []
+    hover_text = []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+        hover_text.append(concepts[node])
+
+    node_trace = go.Scatter(
+        x=node_x,
+        y=node_y,
+        mode="markers",
+        marker=dict(size=10, color="skyblue", line=dict(width=1, color="white")),
+        hovertext=hover_text,
+        hoverinfo="text",
+        name="Concepts",
+    )
+
+    # --- assemble figure ---
+    fig = go.Figure(data=[edge_trace, node_trace])
+    fig.update_layout(
+        title="Concept Similarity Graph",
+        template="plotly_dark",
+        showlegend=False,
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=600,
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+    )
+
+    return fig
 
 
 def visualize_tsne(reduced_embeddings, cluster_labels, names) -> px.scatter:
@@ -161,13 +217,13 @@ def make_sentiment_over_time(df, sentiments, output_file=None) -> px.line:
         x="createdAt",
         y="sentiment_score",
         markers=True,
-        title="Average Sentiment Over Time",
+        # title="Average Mood Over Time",
     )
 
     fig.update_layout(
         template="plotly_dark",
         xaxis_title="Time",
-        yaxis_title="Sentiment Score (-2: Very Negative to +2: Very Positive)",
+        yaxis_title="Sentiment Score",
         hovermode="x unified",
         margin=dict(l=40, r=40, t=60, b=40),
         height=500,
