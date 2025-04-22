@@ -76,27 +76,86 @@ def main():
 
     st.header("Concept Clustering and Similarity Graph... (please wait)")
     col10, col11 = st.columns(2)
-    with col10:
-        card_names = list(set(df_cards["name"].tolist()))
-        embeddings, st_name_model = compute_embeddings(card_names)
 
-        df_embeddings = pd.DataFrame(card_names, columns=["name"])
-        df_embeddings["cluster"] = cluster_concepts(embeddings, num_clusters=8)
+    card_names = list(set(df_cards["name"].tolist()))
+    embeddings, st_name_model = compute_embeddings(card_names)
 
-        reduced_embeddings = reduce_embeddings_tsne(embeddings)
-        tsne_graph = visualize_tsne(
-            reduced_embeddings, df_embeddings["cluster"], card_names
+    # Build similarity graph
+    similarity_graph = build_similarity_graph(
+        card_names, embeddings, threshold=0.5, max_edges=10000
+    )
+
+    # Add a search box for filtering the graph
+    max_search_length = 100  # Set maximum length for search queries
+    search_concept = st.text_input("Search for a concept:", "")
+
+    # Validate search input length
+    if search_concept and len(search_concept) > max_search_length:
+        st.error(
+            f"Search query too long. Please limit to {max_search_length} characters."
         )
-        st.subheader("Embedding Clustering")
-        st.plotly_chart(tsne_graph, use_container_width=True)
+        search_concept = search_concept[
+            :max_search_length
+        ]  # Truncate to the maximum allowed length
+        st.info(f"Search has been truncated to: '{search_concept}'")
 
-    with col11:
-        similarity_graph = build_similarity_graph(
-            card_names, embeddings, threshold=0.5, max_edges=10000
-        )
-        similarity_chart = visualize_graph(similarity_graph, card_names)
-        st.subheader("Concept Similarity Graph")
-        st.plotly_chart(similarity_chart, use_container_width=True)
+    # If search term is provided, find matching nodes
+    highlight_node = None
+    if search_concept:
+        # First look for exact matches
+        exact_matches = [
+            i
+            for i, name in enumerate(card_names)
+            if search_concept.lower() == name.lower()
+        ]
+
+        # Then look for partial matches
+        if not exact_matches:
+            partial_matches = [
+                i
+                for i, name in enumerate(card_names)
+                if search_concept.lower() in name.lower()
+            ]
+
+            if partial_matches:
+                # If we have multiple matches, let the user select
+                if len(partial_matches) > 1:
+                    match_names = [card_names[i] for i in partial_matches]
+                    # Limit number of options shown in dropdown if there are too many matches
+                    if len(match_names) > 50:
+                        st.warning(
+                            f"Found {len(match_names)} matches. Showing first 50."
+                        )
+                        match_names = match_names[:50]
+                    selected_name = st.selectbox(
+                        "Multiple matches found. Select one:", match_names
+                    )
+                    highlight_node = card_names.index(selected_name)
+                    st.success(f"Showing concept: {selected_name}")
+                else:
+                    highlight_node = partial_matches[0]
+                    st.success(f"Showing concept: {card_names[highlight_node]}")
+            else:
+                st.warning(f"No concept matching '{search_concept}' found")
+        else:
+            # Use the exact match
+            highlight_node = exact_matches[0]
+            st.success(f"Exact match found: {card_names[highlight_node]}")
+
+    # Visualize the graph with optional highlighting
+    similarity_chart = visualize_graph(similarity_graph, card_names, highlight_node)
+    st.subheader("Concept Similarity Graph")
+    st.plotly_chart(similarity_chart, use_container_width=True)
+
+    df_embeddings = pd.DataFrame(card_names, columns=["name"])
+    df_embeddings["cluster"] = cluster_concepts(embeddings, num_clusters=10)
+
+    reduced_embeddings = reduce_embeddings_tsne(embeddings)
+    tsne_graph = visualize_tsne(
+        reduced_embeddings, df_embeddings["cluster"], card_names
+    )
+    st.subheader("Embedding Clustering")
+    st.plotly_chart(tsne_graph, use_container_width=True)
 
     st.header("Sentiment and Emotion Analysis... (please wait a lot)")
     # 3. Sentiment and Emotion Analysis

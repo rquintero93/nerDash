@@ -15,6 +15,16 @@ from transformers import pipeline
 pd.set_option("display.max_columns", None)
 
 
+@st.cache_resource(ttl=3600, show_spinner=False)
+def load_embedding_model(model_name="sentence-transformers/all-MiniLM-L12-v2"):
+    """
+    Load the SentenceTransformer model for embedding generation.
+    """
+    model = SentenceTransformer(model_name)
+    return model
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
 def compute_embeddings(
     descriptions, model_name="sentence-transformers/all-MiniLM-L12-v2"
 ):
@@ -25,8 +35,7 @@ def compute_embeddings(
     status_placeholder.write("Computing embeddings...")
     progress_placeholder.progress(0)
 
-    model = SentenceTransformer(model_name)
-
+    model = load_embedding_model(model_name)
     # Process in batches to show progress
     batch_size = 32
     embeddings_list = []
@@ -47,7 +56,7 @@ def compute_embeddings(
     status_placeholder.empty()
     progress_placeholder.empty()
 
-    return embeddings, model
+    return embeddings.detach().cpu().numpy(), model
 
 
 @st.cache_resource(ttl=3600, show_spinner=False)
@@ -82,6 +91,7 @@ def analyze_sentiment_emotion(descriptions):
     return results
 
 
+@st.cache_resource(ttl=3600, show_spinner=False)
 def build_similarity_graph(concepts, embeddings, threshold=0.5, max_edges=1000):
     # Each node is a concept and edges exist if similarity > threshold
     G = nx.Graph()
@@ -98,6 +108,7 @@ def build_similarity_graph(concepts, embeddings, threshold=0.5, max_edges=1000):
     for i in range(num_cards):
         G.add_node(i, concept=concepts[i])
 
+    embeddings = torch.from_numpy(embeddings)
     # Use cosine similarity from sentence-transformers util
     cosine_scores = util.cos_sim(embeddings, embeddings)
 
@@ -141,6 +152,7 @@ def build_similarity_graph(concepts, embeddings, threshold=0.5, max_edges=1000):
     return G
 
 
+@st.cache_resource(ttl=3600, show_spinner=False)
 def reduce_embeddings_tsne(embeddings):
     # Create placeholder elements
     status_placeholder = st.empty()
@@ -170,6 +182,7 @@ def reduce_embeddings_tsne(embeddings):
     return reduced_embeddings
 
 
+@st.cache_resource(ttl=3600, show_spinner=False)
 def cluster_concepts(embeddings, num_clusters):
     # Create placeholder elements
     status_placeholder = st.empty()
@@ -179,7 +192,7 @@ def cluster_concepts(embeddings, num_clusters):
     progress_placeholder.progress(0.5)  # KMeans doesn't report progress
 
     clustering_model = KMeans(n_clusters=num_clusters, random_state=42)
-    cluster_labels = clustering_model.fit_predict(embeddings.cpu().numpy())
+    cluster_labels = clustering_model.fit_predict(embeddings)
 
     progress_placeholder.progress(1.0)
 

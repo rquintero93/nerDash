@@ -73,13 +73,15 @@ def make_line_chart(data: pd.DataFrame = None, x: str = None, y: str = None) -> 
     return fig
 
 
-def visualize_graph(G, concepts) -> go.Figure:
+@st.cache_resource(ttl=3600, show_spinner=False)
+def visualize_graph(_G, concepts, highlight_node=None) -> go.Figure:
     """
     Visualizes a networkx graph using Plotly.
 
     Args:
         G: The networkx graph to visualize
         concepts: A dict or list mapping node IDs to labels
+        highlight_node: Optional node to highlight along with its connections
 
     Returns:
         plotly.graph_objects.Figure: A Plotly figure showing the graph
@@ -92,29 +94,44 @@ def visualize_graph(G, concepts) -> go.Figure:
     status_placeholder.write("Creating graph visualization...")
     progress_placeholder.progress(0)
 
+    # If highlighting a specific node, create a subgraph with that node and its connections
+    if highlight_node is not None and highlight_node in _G.nodes():
+        status_placeholder.write(
+            f"Filtering graph to show node '{concepts[highlight_node]}' and its connections..."
+        )
+        # Get all connections, handling both directed and undirected graphs
+        if hasattr(_G, "predecessors"):  # Check if it's a directed graph
+            neighbors = list(_G.neighbors(highlight_node)) + list(
+                _G.predecessors(highlight_node)
+            )
+        else:  # For undirected graphs
+            neighbors = list(_G.neighbors(highlight_node))
+        nodes_to_keep = [highlight_node] + neighbors
+        _G = _G.subgraph(nodes_to_keep).copy()
+
     # Limit to largest connected component if graph is too large
-    if len(G.nodes()) > 200:
+    elif len(_G.nodes()) > 200:
         progress_placeholder.progress(0.1)
         status_placeholder.write(
             "Graph is large, limiting to largest connected component..."
         )
-        largest_cc = max(nx.connected_components(G), key=len)
-        G = G.subgraph(largest_cc).copy()
+        largest_cc = max(nx.connected_components(_G), key=len)
+        _G = _G.subgraph(largest_cc).copy()
 
     # Use faster layout algorithm for large graphs
     progress_placeholder.progress(0.2)
-    status_placeholder.write(f"Computing layout for {len(G.nodes())} nodes...")
-    if len(G.nodes()) > 100:
-        pos = nx.kamada_kawai_layout(G)
+    status_placeholder.write(f"Computing layout for {len(_G.nodes())} nodes...")
+    if len(_G.nodes()) > 100:
+        pos = nx.kamada_kawai_layout(_G)
     else:
-        pos = nx.spring_layout(G, seed=42)
+        pos = nx.spring_layout(_G, seed=42)
 
     # --- edge trace ---
     progress_placeholder.progress(0.5)
     status_placeholder.write("Building edge traces...")
     edge_x, edge_y = [], []
-    total_edges = len(G.edges())
-    for i, (u, v) in enumerate(G.edges()):
+    total_edges = len(_G.edges())
+    for i, (u, v) in enumerate(_G.edges()):
         x0, y0 = pos[u]
         x1, y1 = pos[v]
         edge_x.extend([x0, x1, None])
@@ -122,9 +139,13 @@ def visualize_graph(G, concepts) -> go.Figure:
         if i % max(1, total_edges // 10) == 0:  # Update every 10%
             progress_placeholder.progress(0.5 + (0.2 * i / total_edges))
 
-    edge_trace = px.line(x=edge_x, y=edge_y).data[0]
-    edge_trace.update(
-        line=dict(width=1, color="gray"), hoverinfo="none", mode="lines", opacity=0.3
+    edge_trace = go.Scatter(
+        x=edge_x,
+        y=edge_y,
+        line=dict(width=1, color="gray"),
+        hoverinfo="none",
+        mode="lines",
+        opacity=0.3,
     )
 
     # --- node trace ---
@@ -132,12 +153,33 @@ def visualize_graph(G, concepts) -> go.Figure:
     status_placeholder.write("Building node traces...")
     node_x, node_y = [], []
     hover_text = []
-    total_nodes = len(G.nodes())
-    for i, node in enumerate(G.nodes()):
+    node_colors = []
+    node_sizes = []
+    total_nodes = len(_G.nodes())
+
+    # Define colors for highlighting
+    highlight_color = "red"
+    neighbor_color = "orange"
+    default_color = "skyblue"
+
+    for i, node in enumerate(_G.nodes()):
         x, y = pos[node]
         node_x.append(x)
         node_y.append(y)
         hover_text.append(concepts[node])
+
+        # Set node color and size based on highlighting
+        if highlight_node is not None:
+            if node == highlight_node:
+                node_colors.append(highlight_color)
+                node_sizes.append(15)  # Larger size for highlighted node
+            else:
+                node_colors.append(neighbor_color)
+                node_sizes.append(10)
+        else:
+            node_colors.append(default_color)
+            node_sizes.append(10)
+
         if i % max(1, total_nodes // 10) == 0:  # Update every 10%
             progress_placeholder.progress(0.7 + (0.2 * i / total_nodes))
 
@@ -145,7 +187,9 @@ def visualize_graph(G, concepts) -> go.Figure:
         x=node_x,
         y=node_y,
         mode="markers",
-        marker=dict(size=10, color="skyblue", line=dict(width=1, color="white")),
+        marker=dict(
+            size=node_sizes, color=node_colors, line=dict(width=1, color="white")
+        ),
         hovertext=hover_text,
         hoverinfo="text",
         name="Concepts",
@@ -154,9 +198,14 @@ def visualize_graph(G, concepts) -> go.Figure:
     # --- assemble figure ---
     progress_placeholder.progress(0.9)
     status_placeholder.write("Assembling final visualization...")
+
+    title = "Concept Similarity Graph"
+    if highlight_node is not None:
+        title += f" - Highlighting: {concepts[highlight_node]}"
+
     fig = go.Figure(data=[edge_trace, node_trace])
     fig.update_layout(
-        title="Concept Similarity Graph",
+        title=title,
         template="plotly_dark",
         showlegend=False,
         margin=dict(l=40, r=40, t=60, b=40),
